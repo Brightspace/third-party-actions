@@ -1,0 +1,21 @@
+name: 'Tasklists'
+description: 'Turn Pull Request tasklists into actionable PR statuses'
+author: 'omsmith'
+
+branding:
+  icon: check-square
+  color: green
+
+runs:
+  using: 'node12'
+  main: 'index.js'
+
+inputs:
+  github_token:
+    description: GITHUB_TOKEN
+    required: false
+    default: ${{ github.token }}
+  report_tasks:
+    description: Report individual tasks along with overall completion (true/false)
+    required: false
+    default: 'false'

@@ -1,0 +1,32 @@
+{
+  "name": "actions-tasklist",
+  "version": "1.0.0",
+  "description": "GitHub Action for interacting with GitHub PR tasklists",
+  "author": "Owen Smith <owen@omsmith.ca>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/omsmith/actions-tasklists.git"
+  },
+  "bugs": {
+    "url": "https://github.com/omsmith/actions-tasklists/issues"
+  },
+  "homepage": "https://github.com/omsmith/actions-tasklists#readme",
+  "scripts": {
+    "build": "tsc --project src && cp action.yml LICENSE package*.json dist",
+    "lint": "xo",
+    "lint:fix": "xo --fix"
+  },
+  "devDependencies": {
+    "@octokit/rest": "^16.43.1",
+    "@types/marked": "^0.7.4",
+    "type-fest": "^0.13.1",
+    "typescript": "^3.8.3",
+    "xo": "^0.29.1"
+  },
+  "dependencies": {
+    "@actions/core": "^1.2.3",
+    "@actions/github": "^2.1.1",
+    "marked": "^0.8.2"
+  }
+}
