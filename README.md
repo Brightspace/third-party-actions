@@ -4,7 +4,13 @@ All third-party authored GitHub Actions at D2L have to be approved.
 We mirror the repos into independent branches of [Brightspace/third-party-actions](https://github.com/brightspace/third-party-actions).
 Here's what's available so far:
 
+* [actions/checkout](https://github.com/Brightspace/third-party-actions/tree/actions/checkout): clone your code
+* [actions/labeler](https://github.com/Brightspace/third-party-actions/tree/actions/labeler): label your PRs based on files touched
+* [actions/setup-dotnet](https://github.com/Brightspace/third-party-actions/tree/actions/setup-dotnet): install and configure the .NET SDK
+* [actions/setup-node](https://github.com/Brightspace/third-party-actions/tree/actions/setup-node): install and configure NodeJS
+* [actions/stale](https://github.com/Brightspace/third-party-actions/tree/geertvdc/stale): automatically close inactive issues and PRs
 * [geertvdc/setup-hub](https://github.com/Brightspace/third-party-actions/tree/geertvdc/setup-hub): configures the hub CLI for GitHub automations
+* [hashicorp/terraform-github-actions](https://github.com/Brightspace/third-party-actions/tree/hashicorp/terraform-github-actions): everything you need for Terraform
 * [jakejarvis/hugo-build-action](https://github.com/Brightspace/third-party-actions/tree/jakejarvis/hugo-build-action): Hugo is a static site generator
 * [omsmith/actions-tasklists](https://github.com/Brightspace/third-party-actions/tree/omsmith/actions-tasklists): creates build statuses for tasks in PRs
 
