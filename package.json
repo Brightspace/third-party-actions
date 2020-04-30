@@ -1,6 +1,6 @@
 {
   "name": "actions-tasklist",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "GitHub Action for interacting with GitHub PR tasklists",
   "author": "Owen Smith <owen@omsmith.ca>",
   "license": "MIT",
@@ -22,11 +22,11 @@
     "@types/marked": "^0.7.4",
     "type-fest": "^0.13.1",
     "typescript": "^3.8.3",
-    "xo": "^0.29.1"
+    "xo": "^0.30.0"
   },
   "dependencies": {
-    "@actions/core": "^1.2.3",
+    "@actions/core": "^1.2.4",
     "@actions/github": "^2.1.1",
-    "marked": "^0.8.2"
+    "marked": "^1.0.0"
   }
 }
