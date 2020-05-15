@@ -23,3 +23,14 @@ Repository | Description
 [omsmith/actions-tasklists](https://github.com/Brightspace/third-party-actions/tree/omsmith/actions-tasklists) | Turn Pull Request tasklists into actionable PR statuses
 
 The configuration lives in [Brightspace/third-party-actions-config](https://github.com/Brightspace/third-party-actions-config) so that we can disable (other peoples) actions in the this repo.
+
+## How to use approved third-party GitHub Actions
+
+In your workflow file
+```
+    - uses: Brightspace/third-party-actions@<action branch name>
+```
+e.g. for the branch [actions/checkout](https://github.com/Brightspace/third-party-actions/tree/actions/checkout)
+```
+- uses: actions/checkout@v2
+```
