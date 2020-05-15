@@ -32,5 +32,5 @@ In your workflow file
 ```
 e.g. for the branch [actions/checkout](https://github.com/Brightspace/third-party-actions/tree/actions/checkout)
 ```
-- uses: actions/checkout@v2
+    - uses: Brightspace/third-party-actions@actions/checkout
 ```
