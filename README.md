@@ -2,9 +2,27 @@
 
 All third-party authored GitHub Actions at D2L have to be approved.
 We mirror the repos into independent branches of [Brightspace/third-party-actions](https://github.com/brightspace/third-party-actions).
-Here's what's available so far:
 
-(Note that this list is maintained manually for the time being)
+## Usage
+
+Instead of using third-party actions directly, like this:
+
+```yaml
+uses: actions/checkout@v2
+```
+
+Use the mirrors from this repo, like this:
+
+```yaml
+- uses: Brightspace/third-party-actions@actions/checkout
+```
+
+There is no `@v2` (etc.) when using this repo.
+We try to stick to a consistent version of each action across our org (configured and maintained by Dependabot in [third-party-actions-config](https://github.com/Brightspace/third-party-actions-config).
+
+## Available actions
+
+Here's what's available so far:
 
 Repository | Description
 -----------|------------
@@ -25,15 +43,15 @@ Repository | Description
 [micnncim/action-label-syncer](https://github.com/Brightspace/third-party-actions/tree/micnncim/action-label-syncer) | Sync GitHub labels in the declarative way.
 [omsmith/actions-tasklists](https://github.com/Brightspace/third-party-actions/tree/omsmith/actions-tasklists) | Turn Pull Request tasklists into actionable PR statuses
 
-The configuration lives in [Brightspace/third-party-actions-config](https://github.com/Brightspace/third-party-actions-config) so that we can disable (other peoples) actions in the this repo.
+## Adding more
 
-## How to use approved third-party GitHub Actions
+This repo is generated and maintained by [Brightspace/third-party-actions-config](https://github.com/Brightspace/third-party-actions-config).
 
-In your workflow file
-```
-    - uses: Brightspace/third-party-actions@<action branch name>
-```
-e.g. for the branch [actions/checkout](https://github.com/Brightspace/third-party-actions/tree/actions/checkout)
-```
-    - uses: Brightspace/third-party-actions@actions/checkout
-```
+## Why two repos?
+
+The third-party actions we mirror in this repo often have their own workflows.
+We don't want to run them, because that could cause security problems (e.g. via self-hosted runners, etc.)
+So we've disabled actions in this repo.
+
+However, the automatic syncing is itself built on actions.
+There is no way to whitelist particular workflows, so we went with a split repo setup.
