@@ -23,7 +23,7 @@ async function getEventDetails() {
 async function main() {
     const token = core_1.getInput('github_token', { required: true });
     const reportTasks = core_1.getInput('report_tasks') === 'true';
-    const octokit = new github_1.GitHub(token);
+    const octokit = github_1.getOctokit(token);
     const details = await getEventDetails();
     if (!details) {
         return;
