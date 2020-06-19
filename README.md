@@ -31,7 +31,7 @@ Repository | Description
 [actions/labeler](https://github.com/Brightspace/third-party-actions/tree/actions/labeler) | Label pull requests by files altered
 [actions/setup-dotnet](https://github.com/Brightspace/third-party-actions/tree/actions/setup-dotnet) | Set up a specific version of the .NET Core CLI in the PATH and set up authentication to a private NuGet repository
 [actions/setup-node](https://github.com/Brightspace/third-party-actions/tree/actions/setup-node) | Setup a Node.js environment and add it to the PATH, additionally providing proxy support
-[actions/stale](https://github.com/Brightspace/third-party-actions/tree/geertvdc/stale) | Close issues and pull requests with no recent activity
+[actions/stale](https://github.com/Brightspace/third-party-actions/tree/actions/stale) | Close issues and pull requests with no recent activity
 [aws-actions/amazon-ecs-deploy-task-definition](https://github.com/Brightspace/third-party-actions/tree/aws-actions/amazon-ecs-deploy-task-definition) | Registers an Amazon ECS task definition, and deploys it to an ECS service
 [aws-actions/amazon-ecs-render-task-definition](https://github.com/Brightspace/third-party-actions/tree/aws-actions/amazon-ecs-render-task-definition) | Inserts a container image URI into a container definition in an Amazon ECS task definition JSON file, creating a new file.
 [aws-actions/configure-aws-credentials](https://github.com/Brightspace/third-party-actions/tree/aws-actions/configure-aws-credentials) | Configure AWS credential and region environment variables for use with the AWS CLI and AWS SDKs
