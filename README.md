@@ -50,6 +50,20 @@ Repository | Description
 
 This repo is generated and maintained by [Brightspace/third-party-actions-config](https://github.com/Brightspace/third-party-actions-config).
 
+## Why?
+
+We are forking all third-party-actions into this repo and disabling the ability to use external actions in our org.
+We're doing this to have more control over the third-party code that we use:
+
+* **We need to make sure that license is acceptable.** e.g. Apache 2.0, ...
+* **We want to vet the actions we use**: there is a wide range of quality in third-party code. The approval process gives us a place and time to do a gut check (with peer review).
+* **We want to try and coordinate**: having one solution to a problem is usually better than 10 solutions to the same problem.
+* **We want a bit more pinning**: the status quo for actions is to do something like `uses: actions/checkout@v2`. This means that your workflow may grab a new version of the action on every run. With this setup we at least get the chance to review every change to third-party code (with diffs) at the org level first.
+* **We want someone responsible for doing upgrades**: we use [`CODEOWNERS` in Brightspace/third-party-actions-config](https://github.com/Brightspace/third-party-actions-config/blob/master/CODEOWNERS) to put specific people in charge of rolling out updates to each action.
+* **We don't want builds to break if a repo disappears**: we've had workflows break when someone (in our case, GitHub themselves) deprecates and deletes their repo. [Brightspace/third-party-actions](https://github.com/brightspace/third-party-actions) acts as a mirror so that won't happen to us out-of-the-blue.
+
+Our hope is that this is a low-friction process.
+
 ## Why two repos?
 
 The third-party actions we mirror in this repo often have their own workflows.
