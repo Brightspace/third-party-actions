@@ -45,6 +45,7 @@ Repository | Description
 [micnncim/action-label-syncer](https://github.com/Brightspace/third-party-actions/tree/micnncim/action-label-syncer) | Sync GitHub labels in the declarative way.
 [neverendingqs/gh-action-node-update-deps](https://github.com/Brightspace/third-party-actions/tree/neverendingqs/gh-action-node-update-deps) | Updates Node dependencies and creates a pull request with the changes.
 [omsmith/actions-tasklists](https://github.com/Brightspace/third-party-actions/tree/omsmith/actions-tasklists) | Turn Pull Request tasklists into actionable PR statuses
+[peter-evans/repository-dispatch](https://github.com/Brightspace/third-party-actions/tree/peter-evans/repository-dispatch) | Create a repository dispatch event
 
 ## Adding more
 
