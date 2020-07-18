@@ -1,4 +1,4 @@
-# gh-action-node-bump-version
+# gh-action-node-bump-version-pr
 
 Bumps Node version and creates a pull request. Can be paired with
 [publish-me-maybe](https://www.npmjs.com/package/publish-me-maybe).
@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: neverendingqs/gh-action-node-bump-version@v1.0.0
+      - uses: neverendingqs/gh-action-node-bump-version-pr@v1.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

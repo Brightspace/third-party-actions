@@ -6,10 +6,10 @@ description: Bumps Node version and creates a pull request.
 inputs:
   git-user-email:
     description: Git user.email to use for the commit.
-    default: gh-action-node-bump-version@example.com
+    default: gh-action-node-bump-version-pr@example.com
   git-user-name:
     description: Git user.name to use for the commit.
-    default: gh-action-node-bump-version
+    default: gh-action-node-bump-version-pr
   package-manager:
     description: Set to 'yarn' to use yarn. Defaults to npm.
     default: npm
