@@ -16,6 +16,12 @@ inputs:
   version-type:
     description: Bumps the package version based on value (e.g. patch)
     default: patch
+  branch:
+    description: Name of the branch to push changes
+  description:
+    description: Adds a custom Description to the PR
+  push-options:
+    description: Options for git push (e.g. --force)
 runs:
   using: docker
   image: Dockerfile
@@ -24,3 +30,6 @@ runs:
     - ${{ inputs.git-user-email }}
     - ${{ inputs.package-manager }}
     - ${{ inputs.version-type }}
+    - ${{ inputs.branch }}
+    - ${{ inputs.description }}
+    - ${{ inputs.push-options }}
