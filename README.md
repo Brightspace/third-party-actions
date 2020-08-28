@@ -48,6 +48,7 @@ Repository | Description
 [micnncim/action-label-syncer](https://github.com/Brightspace/third-party-actions/tree/micnncim/action-label-syncer) | Sync GitHub labels in the declarative way.
 [neverendingqs/gh-action-node-update-deps](https://github.com/Brightspace/third-party-actions/tree/neverendingqs/gh-action-node-update-deps) | Updates Node dependencies and creates a pull request with the changes.
 [omsmith/actions-tasklists](https://github.com/Brightspace/third-party-actions/tree/omsmith/actions-tasklists) | Turn Pull Request tasklists into actionable PR statuses
+[pascalgn/automerge-action](https://github.com/Brightspace/third-party-actions/tree/pascalgn/automerge-action) | Automatically merge pull requests that are ready
 
 ## Adding more
 
