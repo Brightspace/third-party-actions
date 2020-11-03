@@ -31,7 +31,7 @@ async function main() {
     const { body, repo, owner, sha } = details;
     const danglingTasksNames = new Set();
     if (reportTasks) {
-        const existingStatuses = await octokit.repos.listStatusesForRef({ repo, owner, ref: sha });
+        const existingStatuses = await octokit.repos.listCommitStatusesForRef({ repo, owner, ref: sha });
         existingStatuses
             .data
             .map((item) => item.context)
@@ -49,7 +49,7 @@ async function main() {
         if (reportTasks) {
             const name = `Tasklists Task: ${task.name}`;
             danglingTasksNames.delete(name);
-            statusP.push(octokit.repos.createStatus({
+            statusP.push(octokit.repos.createCommitStatus({
                 repo, owner, sha,
                 context: name,
                 state: task.completed ? 'success' : 'pending'
@@ -57,7 +57,7 @@ async function main() {
         }
     }
     for (const name of danglingTasksNames.values()) {
-        statusP.push(octokit.repos.createStatus({
+        statusP.push(octokit.repos.createCommitStatus({
             repo, owner, sha,
             context: name,
             description: 'Removed',
@@ -65,7 +65,7 @@ async function main() {
         }));
     }
     const completed = completedCount === totalCount;
-    statusP.push(octokit.repos.createStatus({
+    statusP.push(octokit.repos.createCommitStatus({
         repo, owner, sha,
         context: 'Tasklists: Completed',
         description: totalCount === 0 ?
