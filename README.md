@@ -41,7 +41,6 @@ Repository | Description
 [aws-actions/configure-aws-credentials](https://github.com/Brightspace/third-party-actions/tree/aws-actions/configure-aws-credentials) | Configure AWS credential and region environment variables for use with the AWS CLI and AWS SDKs
 [codelytv/pr-size-labeler](https://github.com/Brightspace/third-party-actions/tree/codelytv/pr-size-labeler) | Label a PR based on the amount of changes
 [coverallsapp/github-action](https://github.com/Brightspace/third-party-actions/tree/coverallsapp/github-action) | Send test coverage data to Coveralls.io for analysis, change tracking, and notifications.
-[geertvdc/setup-hub](https://github.com/Brightspace/third-party-actions/tree/geertvdc/setup-hub) | **DEPRECATED** Setup your Github Actions runner with Hub CLI
 [hashicorp/setup-terraform](https://github.com/Brightspace/third-party-actions/tree/hashicorp/setup-terraform) | Sets up Terraform CLI in your GitHub Actions workflow.
 [hashicorp/terraform-github-actions](https://github.com/Brightspace/third-party-actions/tree/hashicorp/terraform-github-actions) | **DEPRECATED** Runs Terraform commands via GitHub Actions.
 [jakejarvis/hugo-build-action](https://github.com/Brightspace/third-party-actions/tree/jakejarvis/hugo-build-action) | Hugo as an action, with extended support and legacy versions
