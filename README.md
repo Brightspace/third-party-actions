@@ -26,6 +26,7 @@ Here's what's available so far:
 
 Repository | Description
 -----------|------------
+[actions/cache](https://github.com/Brightspace/third-party-actions/tree/actions/cache) | Cache artifacts like dependencies and build outputs to improve workflow execution time
 [actions/checkout](https://github.com/Brightspace/third-party-actions/tree/actions/checkout) | Checkout a Git repository at a particular version
 [actions/github-script](https://github.com/Brightspace/third-party-actions/tree/actions/github-script) | Run simple scripts using the GitHub client
 [actions/labeler](https://github.com/Brightspace/third-party-actions/tree/actions/labeler) | Label pull requests by files altered
