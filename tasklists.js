@@ -15,7 +15,8 @@ function tasks(tokens) {
         if (!token.task) {
             return;
         }
-        tasks.push({ name: token.tokens[0].text, completed: token.checked });
+        const hack = token;
+        tasks.push({ name: hack.tokens[0].text, completed: token.checked });
     });
     return tasks;
 }

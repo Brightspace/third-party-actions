@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const fs_1 = require("fs");
-const { readFile } = fs_1.promises;
 const core_1 = require("@actions/core");
 const github_1 = require("@actions/github");
 const tasklists_1 = require("./tasklists");
 const util_1 = require("./util");
+const { readFile } = fs_1.promises;
 const GITHUB_EVENT_PATH = util_1.requireEnv('GITHUB_EVENT_PATH');
 async function getEventDetails() {
     var _a;
@@ -32,11 +32,13 @@ async function main() {
     const danglingTasksNames = new Set();
     if (reportTasks) {
         const existingStatuses = await octokit.repos.listCommitStatusesForRef({ repo, owner, ref: sha });
-        existingStatuses
+        const danglingStatuses = existingStatuses
             .data
             .map((item) => item.context)
-            .filter(name => name.startsWith('Tasklists Task:'))
-            .forEach(name => danglingTasksNames.add(name));
+            .filter(name => name.startsWith('Tasklists Task:'));
+        for (const danglingStatus of danglingStatuses) {
+            danglingTasksNames.add(danglingStatus);
+        }
     }
     const statusP = [];
     let completedCount = 0;
@@ -75,4 +77,6 @@ async function main() {
     }));
     await Promise.all(statusP);
 }
-main().catch((error) => core_1.setFailed(`Run failed: ${error.message}`));
+main().catch((error) => {
+    core_1.setFailed(`Run failed: ${error.message}`);
+});
