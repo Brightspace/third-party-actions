@@ -46,6 +46,7 @@ Repository | Description
 [coverallsapp/github-action](https://github.com/Brightspace/third-party-actions/tree/coverallsapp/github-action) | Send test coverage data to Coveralls.io for analysis, change tracking, and notifications.
 [hashicorp/setup-terraform](https://github.com/Brightspace/third-party-actions/tree/hashicorp/setup-terraform) | Sets up Terraform CLI in your GitHub Actions workflow.
 [hashicorp/terraform-github-actions](https://github.com/Brightspace/third-party-actions/tree/hashicorp/terraform-github-actions) | **DEPRECATED** Runs Terraform commands via GitHub Actions.
+[hmarr/auto-approve-action](https://github.com/Brightspace/third-party-actions/tree/hmarr/auto-approve-action) | Automatically approve pull requests
 [jakejarvis/hugo-build-action](https://github.com/Brightspace/third-party-actions/tree/jakejarvis/hugo-build-action) | Hugo as an action, with extended support and legacy versions
 [mavrosxristoforos/get-xml-info](https://github.com/Brightspace/third-party-actions/tree/mavrosxristoforos/get-xml-info) | Get Information from XML files to use into your GitHub workflows
 [micnncim/action-label-syncer](https://github.com/Brightspace/third-party-actions/tree/micnncim/action-label-syncer) | Sync GitHub labels in the declarative way.
