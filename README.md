@@ -30,7 +30,7 @@ Repository | Description
 [actions/checkout](https://github.com/Brightspace/third-party-actions/tree/actions/checkout) | Checkout a Git repository at a particular version
 [actions/github-script](https://github.com/Brightspace/third-party-actions/tree/actions/github-script) | Run simple scripts using the GitHub client
 [actions/labeler](https://github.com/Brightspace/third-party-actions/tree/actions/labeler) | Label pull requests by files altered
-[actions/setup-dotnet](https://github.com/Brightspace/third-party-actions/tree/actions/setup-dotnet) | Used to build and publish .NET source. Set up a specific version of the .NET Core CLI in the PATH and set up authentication to a private NuGet repository
+[actions/setup-dotnet](https://github.com/Brightspace/third-party-actions/tree/actions/setup-dotnet) | Used to build and publish .NET source. Set up a specific version of the .NET and authentication to private NuGet repository
 [actions/setup-go](https://github.com/Brightspace/third-party-actions/tree/actions/setup-go) | **DEPRECATED** Setup a Go environment and add it to the PATH
 [actions/setup-java](https://github.com/Brightspace/third-party-actions/tree/actions/setup-java) | Set up a specific version of the Java JDK and add the
 [actions/setup-node](https://github.com/Brightspace/third-party-actions/tree/actions/setup-node) | Setup a Node.js environment by adding problem matchers and optionally downloading and adding it to the PATH
