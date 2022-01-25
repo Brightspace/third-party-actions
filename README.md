@@ -56,6 +56,7 @@ Repository | Description
 [nikeee/docfx-action](https://github.com/Brightspace/third-party-actions/tree/nikeee/docfx-action) | Runs docfx as a GitHub Action.
 [omsmith/actions-tasklists](https://github.com/Brightspace/third-party-actions/tree/omsmith/actions-tasklists) | Turn Pull Request tasklists into actionable PR statuses
 [pascalgn/automerge-action](https://github.com/Brightspace/third-party-actions/tree/pascalgn/automerge-action) | Automatically merge pull requests that are ready
+[ruby/setup-ruby](https://github.com/Brightspace/third-party-actions/tree/ruby/setup-ruby) | Download a prebuilt Ruby and add it to the PATH in 5 seconds
 [slackapi/slack-github-action](https://github.com/Brightspace/third-party-actions/tree/slackapi/slack-github-action) | Publish a message in a channel or send a JSON payload to the Slack Workflow Builder
 
 ## Adding more
