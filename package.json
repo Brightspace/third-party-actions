@@ -13,22 +13,30 @@
   },
   "homepage": "https://github.com/omsmith/actions-tasklists#readme",
   "scripts": {
-    "build": "tsc --project src && cp action.yml LICENSE package*.json dist",
+    "build": "tsc && cp action.yml LICENSE package*.json dist",
     "lint": "xo",
     "lint:fix": "xo --fix",
-    "test": "ts-node $(npm bin)/ava -v test/*"
+    "test": "ava -v test/*"
   },
   "devDependencies": {
-    "@types/marked": "^2.0.3",
-    "ava": "^3.15.0",
-    "ts-node": "^10.0.0",
+    "@types/marked": "^4.0.2",
+    "ava": "^4.1.0",
+    "ts-node": "^10.7.0",
     "typescript": "^4.3.2",
-    "xo": "^0.40.2"
+    "xo": "^0.48.0"
   },
   "dependencies": {
-    "@actions/core": "^1.4.0",
-    "@actions/github": "^4.0.0",
-    "@octokit/types": "^6.16.2",
-    "marked": "^2.0.7"
+    "@actions/core": "^1.6.0",
+    "@actions/github": "^5.0.0",
+    "@octokit/types": "^6.34.0",
+    "marked": "^4.0.12"
+  },
+  "ava": {
+    "extensions": [
+      "ts"
+    ],
+    "require": [
+      "ts-node/register"
+    ]
   }
 }
