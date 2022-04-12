@@ -28,7 +28,6 @@ Repository | Description
 -----------|------------
 [actions/cache](https://github.com/Brightspace/third-party-actions/tree/actions/cache) | Cache artifacts like dependencies and build outputs to improve workflow execution time
 [actions/checkout](https://github.com/Brightspace/third-party-actions/tree/actions/checkout) | Checkout a Git repository at a particular version
-[actions/dependency-review-action](https://github.com/Brightspace/third-party-actions/tree/actions/dependency-review-action) | Prevent the introduction of dependencies with known vulnerabilities
 [actions/github-script](https://github.com/Brightspace/third-party-actions/tree/actions/github-script) | Run simple scripts using the GitHub client
 [actions/labeler](https://github.com/Brightspace/third-party-actions/tree/actions/labeler) | Label pull requests by files altered
 [actions/setup-dotnet](https://github.com/Brightspace/third-party-actions/tree/actions/setup-dotnet) | Used to build and publish .NET source. Set up a specific version of the .NET and authentication to private NuGet repository
