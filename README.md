@@ -26,6 +26,7 @@ Here's what's available so far:
 
 Repository | Description
 -----------|------------
+[NuGet/setup-nuget](https://github.com/Brightspace/third-party-actions/tree/NuGet/setup-nuget) | Official NuGet.exe setup action that supports cross-platform installation of specific NuGet.exe versions.
 [actions/cache](https://github.com/Brightspace/third-party-actions/tree/actions/cache) | Cache artifacts like dependencies and build outputs to improve workflow execution time
 [actions/checkout](https://github.com/Brightspace/third-party-actions/tree/actions/checkout) | Checkout a Git repository at a particular version
 [actions/github-script](https://github.com/Brightspace/third-party-actions/tree/actions/github-script) | Run simple scripts using the GitHub client
