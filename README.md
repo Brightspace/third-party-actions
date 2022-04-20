@@ -34,7 +34,7 @@ Repository | Description
 [actions/setup-dotnet](https://github.com/Brightspace/third-party-actions/tree/actions/setup-dotnet) | Used to build and publish .NET source. Set up a specific version of the .NET and authentication to private NuGet repository
 [actions/setup-go](https://github.com/Brightspace/third-party-actions/tree/actions/setup-go) | **DEPRECATED** Setup a Go environment and add it to the PATH
 [actions/setup-java](https://github.com/Brightspace/third-party-actions/tree/actions/setup-java) | Set up a specific version of the Java JDK and add the
-[actions/setup-node](https://github.com/Brightspace/third-party-actions/tree/actions/setup-node) | Setup a Node.js environment by adding problem matchers and optionally downloading and adding it to the PATH
+[actions/setup-node](https://github.com/Brightspace/third-party-actions/tree/actions/setup-node) | Setup a Node.js environment by adding problem matchers and optionally downloading and adding it to the PATH.
 [actions/setup-python](https://github.com/Brightspace/third-party-actions/tree/actions/setup-python) | Set up a specific version of Python and add the command-line tools to the PATH.
 [actions/stale](https://github.com/Brightspace/third-party-actions/tree/actions/stale) | Close issues and pull requests with no recent activity
 [amannn/action-semantic-pull-request](https://github.com/Brightspace/third-party-actions/tree/amannn/action-semantic-pull-request) | Ensure your PR title matches the Conventional Commits spec (https://www.conventionalcommits.org/).
