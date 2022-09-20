@@ -59,6 +59,7 @@ Repository | Description
 [omsmith/actions-tasklists](https://github.com/Brightspace/third-party-actions/tree/omsmith/actions-tasklists) | Turn Pull Request tasklists into actionable PR statuses
 [pascalgn/automerge-action](https://github.com/Brightspace/third-party-actions/tree/pascalgn/automerge-action) | Automatically merge pull requests that are ready
 [peter-evans/create-pull-request](https://github.com/Brightspace/third-party-actions/tree/peter-evans/create-pull-request) | Creates a pull request for changes to your repository in the actions workspace
+[peter-evans/find-comment](https://github.com/Brightspace/third-party-actions/tree/peter-evans/find-comment) | Find an issue or pull request comment
 [ruby/setup-ruby](https://github.com/Brightspace/third-party-actions/tree/ruby/setup-ruby) | Download a prebuilt Ruby and add it to the PATH in 5 seconds
 [slackapi/slack-github-action](https://github.com/Brightspace/third-party-actions/tree/slackapi/slack-github-action) | Publish a message in a channel or send a JSON payload to the Slack Workflow Builder
 
