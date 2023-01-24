@@ -50,6 +50,19 @@ Repository | Description
 [hashicorp/setup-terraform](https://github.com/Brightspace/third-party-actions/tree/hashicorp/setup-terraform) | Sets up Terraform CLI in your GitHub Actions workflow.
 [hashicorp/terraform-github-actions](https://github.com/Brightspace/third-party-actions/tree/hashicorp/terraform-github-actions) | **DEPRECATED** Runs Terraform commands via GitHub Actions.
 [hmarr/auto-approve-action](https://github.com/Brightspace/third-party-actions/tree/hmarr/auto-approve-action) | Automatically approve pull requests
+[int128/hide-comment-action](https://github.com/Brightspace/third-party-actions/tree/int128/hide-comment-action) | hide comment(s) in a pull request
+[jakejarvis/hugo-build-action](https://github.com/Brightspace/third-party-actions/tree/jakejarvis/hugo-build-action) | Hugo as an action, with extended support and legacy versions
+[mavrosxristoforos/get-xml-info](https://github.com/Brightspace/third-party-actions/tree/mavrosxristoforos/get-xml-info) | Get Information from XML files to use into your GitHub workflows
+[micnncim/action-label-syncer](https://github.com/Brightspace/third-party-actions/tree/micnncim/action-label-syncer) | Sync GitHub labels in the declarative way.
+[mshick/add-pr-comment](https://github.com/Brightspace/third-party-actions/tree/mshick/add-pr-comment) | Add a comment to a pull request
+[neverendingqs/gh-action-node-update-deps](https://github.com/Brightspace/third-party-actions/tree/neverendingqs/gh-action-node-update-deps) | Updates Node dependencies and creates a pull request with the changes.
+[nikeee/docfx-action](https://github.com/Brightspace/third-party-actions/tree/nikeee/docfx-action) | Runs docfx as a GitHub Action.
+[omsmith/actions-tasklists](https://github.com/Brightspace/third-party-actions/tree/omsmith/actions-tasklists) | Turn Pull Request tasklists into actionable PR statuses
+[pascalgn/automerge-action](https://github.com/Brightspace/third-party-actions/tree/pascalgn/automerge-action) | Automatically merge pull requests that are ready
+[peter-evans/create-pull-request](https://github.com/Brightspace/third-party-actions/tree/peter-evans/create-pull-request) | Creates a pull request for changes to your repository in the actions workspace
+[peter-evans/find-comment](https://github.com/Brightspace/third-party-actions/tree/peter-evans/find-comment) | Find an issue or pull request comment
+[ruby/setup-ruby](https://github.com/Brightspace/third-party-actions/tree/ruby/setup-ruby) | Download a prebuilt Ruby and add it to the PATH in 5 seconds
+[slackapi/slack-github-action](https://github.com/Brightspace/third-party-actions/tree/slackapi/slack-github-action) | Publish a message in a channel or send a JSON payload to the Slack Workflow Builder
 
 ## Adding more
 
