@@ -37,6 +37,7 @@ Repository | Description
 [actions/setup-node](https://github.com/Brightspace/third-party-actions/tree/actions/setup-node) | Setup a Node.js environment by adding problem matchers and optionally downloading and adding it to the PATH.
 [actions/setup-python](https://github.com/Brightspace/third-party-actions/tree/actions/setup-python) | Set up a specific version of Python and add the command-line tools to the PATH.
 [actions/stale](https://github.com/Brightspace/third-party-actions/tree/actions/stale) | Close issues and pull requests with no recent activity
+[actions/upload-artifact](https://github.com/Brightspace/third-party-actions/tree/actions/upload-artifact) | Upload a build artifact that can be used by subsequent workflow steps
 [amannn/action-semantic-pull-request](https://github.com/Brightspace/third-party-actions/tree/amannn/action-semantic-pull-request) | Ensure your PR title matches the Conventional Commits spec (https://www.conventionalcommits.org/).
 [android-actions/setup-android](https://github.com/Brightspace/third-party-actions/tree/android-actions/setup-android) | Setup the Android SDK Tools and add them to the path
 [aws-actions/amazon-ecr-login](https://github.com/Brightspace/third-party-actions/tree/aws-actions/amazon-ecr-login) | Logs in the local Docker client to one or more Amazon ECR Private registries or an Amazon ECR Public registry
