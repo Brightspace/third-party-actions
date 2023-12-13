@@ -58,6 +58,7 @@ Repository | Description
 [mavrosxristoforos/get-xml-info](https://github.com/Brightspace/third-party-actions/tree/mavrosxristoforos/get-xml-info) | Get Information from XML files to use into your GitHub workflows
 [micnncim/action-label-syncer](https://github.com/Brightspace/third-party-actions/tree/micnncim/action-label-syncer) | Sync GitHub labels in the declarative way.
 [mshick/add-pr-comment](https://github.com/Brightspace/third-party-actions/tree/mshick/add-pr-comment) | Add a comment to a pull request
+[ncipollo/release-action](https://github.com/Brightspace/third-party-actions/tree/ncipollo/release-action) | Creates github releases
 [neverendingqs/gh-action-node-update-deps](https://github.com/Brightspace/third-party-actions/tree/neverendingqs/gh-action-node-update-deps) | Updates Node dependencies and creates a pull request with the changes.
 [nikeee/docfx-action](https://github.com/Brightspace/third-party-actions/tree/nikeee/docfx-action) | Runs docfx as a GitHub Action.
 [omsmith/actions-tasklists](https://github.com/Brightspace/third-party-actions/tree/omsmith/actions-tasklists) | Turn Pull Request tasklists into actionable PR statuses
