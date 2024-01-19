@@ -50,6 +50,7 @@ Repository | Description
 [coverallsapp/github-action](https://github.com/Brightspace/third-party-actions/tree/coverallsapp/github-action) | Send test coverage data to Coveralls.io for analysis, change tracking, and notifications.
 [dorny/paths-filter](https://github.com/Brightspace/third-party-actions/tree/dorny/paths-filter) | Execute your workflow steps only if relevant files are modified.
 [hashicorp/packer-github-actions](https://github.com/Brightspace/third-party-actions/tree/hashicorp/packer-github-actions) | Run Packer commands
+[hashicorp/setup-packer](https://github.com/Brightspace/third-party-actions/tree/hashicorp/setup-packer) | A GitHub Action to install a specific version of HashiCorp Packer and add it to PATH.
 [hashicorp/setup-terraform](https://github.com/Brightspace/third-party-actions/tree/hashicorp/setup-terraform) | Sets up Terraform CLI in your GitHub Actions workflow.
 [hashicorp/terraform-github-actions](https://github.com/Brightspace/third-party-actions/tree/hashicorp/terraform-github-actions) | **DEPRECATED** Runs Terraform commands via GitHub Actions.
 [hmarr/auto-approve-action](https://github.com/Brightspace/third-party-actions/tree/hmarr/auto-approve-action) | Automatically approve pull requests
