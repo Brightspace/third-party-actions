@@ -44,6 +44,7 @@ Repository | Description
 [aws-actions/amazon-ecr-login](https://github.com/Brightspace/third-party-actions/tree/aws-actions/amazon-ecr-login) | Logs in the local Docker client to one or more Amazon ECR Private registries or an Amazon ECR Public registry
 [aws-actions/amazon-ecs-deploy-task-definition](https://github.com/Brightspace/third-party-actions/tree/aws-actions/amazon-ecs-deploy-task-definition) | Registers an Amazon ECS task definition, and deploys it to an ECS service
 [aws-actions/amazon-ecs-render-task-definition](https://github.com/Brightspace/third-party-actions/tree/aws-actions/amazon-ecs-render-task-definition) | Inserts a container image URI into a container definition in an Amazon ECS task definition JSON file, creating a new file.
+[aws-actions/aws-codebuild-run-build](https://github.com/Brightspace/third-party-actions/tree/aws-actions/aws-codebuild-run-build) | Execute CodeBuild::startBuild for the current repo.
 [aws-actions/configure-aws-credentials](https://github.com/Brightspace/third-party-actions/tree/aws-actions/configure-aws-credentials) | Configures AWS credentials for use in subsequent steps in a GitHub Action workflow
 [cemkiy/action-slacker](https://github.com/Brightspace/third-party-actions/tree/cemkiy/action-slacker) | Send slack messages with attachments, auto username, branch and other actions
 [codelytv/pr-size-labeler](https://github.com/Brightspace/third-party-actions/tree/codelytv/pr-size-labeler) | Label a PR based on the amount of changes
