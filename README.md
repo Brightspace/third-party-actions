@@ -69,6 +69,7 @@ Repository | Description
 [pnpm/action-setup](https://github.com/Brightspace/third-party-actions/tree/pnpm/action-setup) | Install pnpm package manager
 [reactivecircus/android-emulator-runner](https://github.com/Brightspace/third-party-actions/tree/reactivecircus/android-emulator-runner) | Installs, configures and starts an Android Emulator directly on macOS virtual machines.
 [ruby/setup-ruby](https://github.com/Brightspace/third-party-actions/tree/ruby/setup-ruby) | Download a prebuilt Ruby and add it to the PATH in 5 seconds
+[shivammathur/setup-php](https://github.com/Brightspace/third-party-actions/tree/shivammathur/setup-php) | GitHub Action for PHP
 [slackapi/slack-github-action](https://github.com/Brightspace/third-party-actions/tree/slackapi/slack-github-action) | Publish a message in a channel or send a JSON payload to the Slack Workflow Builder
 
 ## Adding more
