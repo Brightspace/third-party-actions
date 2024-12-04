@@ -61,7 +61,6 @@ Repository | Description
 [mshick/add-pr-comment](https://github.com/Brightspace/third-party-actions/tree/mshick/add-pr-comment) | Add a comment to a pull request
 [ncipollo/release-action](https://github.com/Brightspace/third-party-actions/tree/ncipollo/release-action) | Creates github releases
 [neverendingqs/gh-action-node-update-deps](https://github.com/Brightspace/third-party-actions/tree/neverendingqs/gh-action-node-update-deps) | Updates Node dependencies and creates a pull request with the changes.
-[nikeee/docfx-action](https://github.com/Brightspace/third-party-actions/tree/nikeee/docfx-action) | Runs docfx as a GitHub Action.
 [omsmith/actions-tasklists](https://github.com/Brightspace/third-party-actions/tree/omsmith/actions-tasklists) | Turn Pull Request tasklists into actionable PR statuses
 [pascalgn/automerge-action](https://github.com/Brightspace/third-party-actions/tree/pascalgn/automerge-action) | Automatically merge pull requests that are ready
 [peter-evans/create-pull-request](https://github.com/Brightspace/third-party-actions/tree/peter-evans/create-pull-request) | Creates a pull request for changes to your repository in the actions workspace
