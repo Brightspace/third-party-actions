@@ -30,6 +30,7 @@ Repository | Description
 [NuGet/setup-nuget](https://github.com/Brightspace/third-party-actions/tree/NuGet/setup-nuget) | Official NuGet.exe setup action that supports cross-platform installation of specific NuGet.exe versions.
 [actions/cache](https://github.com/Brightspace/third-party-actions/tree/actions/cache) | Cache artifacts like dependencies and build outputs to improve workflow execution time
 [actions/checkout](https://github.com/Brightspace/third-party-actions/tree/actions/checkout) | Checkout a Git repository at a particular version
+[actions/download-artifact](https://github.com/Brightspace/third-party-actions/tree/actions/download-artifact) | Download a build artifact that was previously uploaded in the workflow by the upload-artifact action
 [actions/github-script](https://github.com/Brightspace/third-party-actions/tree/actions/github-script) | Run simple scripts using the GitHub client
 [actions/labeler](https://github.com/Brightspace/third-party-actions/tree/actions/labeler) | Automatically label new pull requests based on the paths of files being changed
 [actions/setup-dotnet](https://github.com/Brightspace/third-party-actions/tree/actions/setup-dotnet) | Used to build and publish .NET source. Set up a specific version of the .NET and authentication to private NuGet repository
