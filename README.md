@@ -64,13 +64,6 @@ Repository | Description
 [neverendingqs/gh-action-node-update-deps](https://github.com/Brightspace/third-party-actions/tree/neverendingqs/gh-action-node-update-deps) | Updates Node dependencies and creates a pull request with the changes.
 [omsmith/actions-tasklists](https://github.com/Brightspace/third-party-actions/tree/omsmith/actions-tasklists) | Turn Pull Request tasklists into actionable PR statuses
 [pascalgn/automerge-action](https://github.com/Brightspace/third-party-actions/tree/pascalgn/automerge-action) | Automatically merge pull requests that are ready
-[peter-evans/create-pull-request](https://github.com/Brightspace/third-party-actions/tree/peter-evans/create-pull-request) | Creates a pull request for changes to your repository in the actions workspace
-[peter-evans/find-comment](https://github.com/Brightspace/third-party-actions/tree/peter-evans/find-comment) | Find an issue or pull request comment
-[pnpm/action-setup](https://github.com/Brightspace/third-party-actions/tree/pnpm/action-setup) | Install pnpm package manager
-[reactivecircus/android-emulator-runner](https://github.com/Brightspace/third-party-actions/tree/reactivecircus/android-emulator-runner) | Installs, configures and starts an Android Emulator directly on macOS virtual machines.
-[ruby/setup-ruby](https://github.com/Brightspace/third-party-actions/tree/ruby/setup-ruby) | Download a prebuilt Ruby and add it to the PATH in 5 seconds
-[shivammathur/setup-php](https://github.com/Brightspace/third-party-actions/tree/shivammathur/setup-php) | GitHub Action for PHP
-[slackapi/slack-github-action](https://github.com/Brightspace/third-party-actions/tree/slackapi/slack-github-action) | Publish a message in a channel or send a JSON payload to the Slack Workflow Builder
 
 ## Adding more
 
