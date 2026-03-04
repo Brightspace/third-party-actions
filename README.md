@@ -50,6 +50,7 @@ Repository | Description
 [cemkiy/action-slacker](https://github.com/Brightspace/third-party-actions/tree/cemkiy/action-slacker) | Send slack messages with attachments, auto username, branch and other actions
 [codelytv/pr-size-labeler](https://github.com/Brightspace/third-party-actions/tree/codelytv/pr-size-labeler) | Label a PR based on the amount of changes
 [dependabot/fetch-metadata](https://github.com/Brightspace/third-party-actions/tree/dependabot/fetch-metadata) | Extract information from about the dependency being updated by a Dependabot-generated PR
+[docker/setup-qemu-action](https://github.com/Brightspace/third-party-actions/tree/docker/setup-qemu-action) | Install QEMU static binaries
 [dorny/paths-filter](https://github.com/Brightspace/third-party-actions/tree/dorny/paths-filter) | Execute your workflow steps only if relevant files are modified.
 [hashicorp/packer-github-actions](https://github.com/Brightspace/third-party-actions/tree/hashicorp/packer-github-actions) | Run Packer commands
 [hashicorp/setup-packer](https://github.com/Brightspace/third-party-actions/tree/hashicorp/setup-packer) | A GitHub Action to install a specific version of HashiCorp Packer and add it to PATH.
