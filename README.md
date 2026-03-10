@@ -74,6 +74,7 @@ Repository | Description
 [saucelabs/sauce-connect-action](https://github.com/Brightspace/third-party-actions/tree/saucelabs/sauce-connect-action) | A GitHub action to launch Sauce Connect Proxy
 [shivammathur/setup-php](https://github.com/Brightspace/third-party-actions/tree/shivammathur/setup-php) | GitHub Action for PHP
 [slackapi/slack-github-action](https://github.com/Brightspace/third-party-actions/tree/slackapi/slack-github-action) | Publish a message in a channel or send a JSON payload to the Slack Workflow Builder
+[tj-actions/changed-files](https://github.com/Brightspace/third-party-actions/tree/tj-actions/changed-files) | Get all Added, Copied, Modified, Deleted, Renamed, Type changed, Unmerged, and Unknown files.
 
 ## Adding more
 
