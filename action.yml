@@ -37,6 +37,6 @@ outputs:
   bin_dest:
     description: Location of `pnpm` and `pnpx` command
 runs:
-  using: node24
+  using: node20
   main: dist/index.js
   post: dist/index.js

@@ -24,8 +24,8 @@ importers:
         specifier: ^2.0.2
         version: 2.0.2
       '@types/node':
-        specifier: ^22.0.0
-        version: 22.19.11
+        specifier: ^20.11.5
+        version: 20.17.17
       expand-tilde:
         specifier: ^2.0.2
         version: 2.0.2
@@ -137,8 +137,8 @@ packages:
   '@types/expand-tilde@2.0.2':
     resolution: {integrity: sha512-wlsMYiapmIR4Eq/Z0qysN8xaDMjSkO6AIDNFx9oxgWGeKVA1jU+NzwPRZErBNP5z6/dx6QNkNpKglBGPO9OkTA==}
 
-  '@types/node@22.19.11':
-    resolution: {integrity: sha512-BH7YwL6rA93ReqeQS1c4bsPpcfOmJasG+Fkr6Y59q83f9M1WcBRHR2vM+P9eOisYRcN3ujQoiZY8uk5W+1WL8w==}
+  '@types/node@20.17.17':
+    resolution: {integrity: sha512-/WndGO4kIfMicEQLTi/mDANUu/iVUhT7KboZPdEqqHQ4aTS+3qT3U5gIqWDFV+XouorjfgGqvKILJeHhuQgFYg==}
 
   '@typespec/ts-http-runtime@0.3.0':
     resolution: {integrity: sha512-sOx1PKSuFwnIl7z4RN0Ls7N9AQawmR9r66eI5rFCzLDIs8HTIYrIpH9QjYWoX0lkgGrkLxXhi4QnK7MizPRrIg==}
@@ -335,8 +335,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  undici-types@6.21.0:
-    resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
+  undici-types@6.19.8:
+    resolution: {integrity: sha512-ve2KP6f/JnbPBFyobGHuerC9g1FYGn/F8n1LWTwNxCEzd6IfqTwUQcNXgEtmmQ6DlRrC1hrSrBnCZPokRrDHjw==}
 
   undici@5.29.0:
     resolution: {integrity: sha512-raqeBD6NQK4SkWhQzeYKd1KmIG6dllBOTt55Rmkt4HtI9mwdWtJljnrXjAFUBLTSN67HWrOIZ3EPF4kjUw80Bg==}
@@ -539,9 +539,9 @@ snapshots:
 
   '@types/expand-tilde@2.0.2': {}
 
-  '@types/node@22.19.11':
+  '@types/node@20.17.17':
     dependencies:
-      undici-types: 6.21.0
+      undici-types: 6.19.8
 
   '@typespec/ts-http-runtime@0.3.0':
     dependencies:
@@ -717,7 +717,7 @@ snapshots:
 
   typescript@5.7.3: {}
 
-  undici-types@6.21.0: {}
+  undici-types@6.19.8: {}
 
   undici@5.29.0:
     dependencies:
