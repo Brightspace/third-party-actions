@@ -51,6 +51,7 @@ Repository | Description
 [dependabot/fetch-metadata](https://github.com/Brightspace/third-party-actions/tree/dependabot/fetch-metadata) | Extract information from about the dependency being updated by a Dependabot-generated PR
 [docker/setup-qemu-action](https://github.com/Brightspace/third-party-actions/tree/docker/setup-qemu-action) | Install QEMU static binaries
 [dorny/paths-filter](https://github.com/Brightspace/third-party-actions/tree/dorny/paths-filter) | Execute your workflow steps only if relevant files are modified.
+[editorconfig-checker/action-editorconfig-checker](https://github.com/Brightspace/third-party-actions/tree/editorconfig-checker/action-editorconfig-checker) | Using editorconfig-checker to verify your files
 [hashicorp/packer-github-actions](https://github.com/Brightspace/third-party-actions/tree/hashicorp/packer-github-actions) | Run Packer commands
 [hashicorp/setup-packer](https://github.com/Brightspace/third-party-actions/tree/hashicorp/setup-packer) | A GitHub Action to install a specific version of HashiCorp Packer and add it to PATH.
 [hashicorp/setup-terraform](https://github.com/Brightspace/third-party-actions/tree/hashicorp/setup-terraform) | Sets up Terraform CLI in your GitHub Actions workflow.
