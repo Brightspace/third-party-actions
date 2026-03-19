@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/aws-actions/amazon-ecr-login/compare/v2.0.2...v2.1.0) (2026-03-19)
+
+
+### Features
+
+* Add EKS Pod Identity support to Amazon ECR login action ([#624](https://github.com/aws-actions/amazon-ecr-login/issues/624), [#735](https://github.com/aws-actions/amazon-ecr-login/issues/735)) ([#740](https://github.com/aws-actions/amazon-ecr-login/issues/740)) ([dcb4c27](https://github.com/aws-actions/amazon-ecr-login/commit/dcb4c271bc6a7911759352f7f39dfe3730e6a1d7))
+
 ### [2.0.2](https://github.com/aws-actions/amazon-ecr-login/compare/v2.0.1...v2.0.2) (2026-03-13)
 
 
