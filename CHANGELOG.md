@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.1](https://github.com/aws-actions/amazon-ecr-login/compare/v2.1.0...v2.1.1) (2026-03-24)
+
+
+### Bug Fixes
+
+* prefer explicit env var credentials over Pod Identity ([#953](https://github.com/aws-actions/amazon-ecr-login/issues/953)) ([ecbbdc7](https://github.com/aws-actions/amazon-ecr-login/commit/ecbbdc7f1f74432084693d9d350c6d35a7f0322a))
+
 ## [2.1.0](https://github.com/aws-actions/amazon-ecr-login/compare/v2.0.2...v2.1.0) (2026-03-19)
 
 
