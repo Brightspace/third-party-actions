@@ -28,6 +28,9 @@ runs:
         INPUT_LABEL: ${{ inputs.label }}
       run: |
         set -euo pipefail
+        
+        # Support GitHub Enterprise Cloud when using gh CLI
+        export GH_HOST="${GITHUB_SERVER_URL#*://}"
 
         if [ ! -f "$INPUT_FILE" ]; then
           echo "::error::Coverage file not found: $INPUT_FILE"
