@@ -12,7 +12,7 @@ inputs:
     description: 'Label for the coverage report (e.g. "code-coverage/jacoco")'
     required: true
   token:
-    description: 'GitHub token with security-events:write permission'
+    description: 'GitHub token with code-quality:write permission'
     required: false
     default: ${{ github.token }}
 
@@ -99,7 +99,7 @@ runs:
         UPLOAD_OUTPUT=$(gh api --method PUT "/repos/${{ github.repository }}/code-coverage/report" \
           --input __body.json 2>&1) || {
           if echo "$UPLOAD_OUTPUT" | grep -qi "not authorized"; then
-            echo "::error::Coverage upload returned 403 Forbidden. Ensure the calling job has 'security-events: write' permission. See https://github.com/actions/upload-code-coverage#permissions"
+            echo "::error::Coverage upload returned 403 Forbidden. Ensure the calling job has 'code-quality: write' permission. See https://github.com/actions/upload-code-coverage#permissions"
           else
             echo "::error::Coverage upload failed: $UPLOAD_OUTPUT"
           fi
