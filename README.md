@@ -91,12 +91,6 @@ jobs:
           label: code-coverage/jacoco
 ```
 
-## Prerequisites
-
-The repository must have the following feature flags enabled:
-- `code_coverage_upload_api` (org-level)
-- `code_coverage_processing` (repo-level)
-
 ## Caveats
 
 - **Fork PRs are not supported.** Pull requests from forks don't have write access to the base repository, so the action cannot upload coverage. When a fork PR is detected, the action exits gracefully with a notice — it won't fail your CI.
