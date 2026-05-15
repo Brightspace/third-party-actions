@@ -12,7 +12,7 @@ inputs:
     description: 'Label for the coverage report (e.g. "code-coverage/jacoco")'
     required: true
   token:
-    description: 'GitHub token with security-events:write permission'
+    description: 'GitHub token with code-quality:write permission'
     required: false
     default: ${{ github.token }}
 
@@ -83,9 +83,9 @@ runs:
             --arg commit_oid "$COMMIT_OID" \
             --rawfile coverage_report __coverage_b64.txt \
             --arg language_name "$INPUT_LANGUAGE" \
-            --arg label "$INPUT_LABEL" \
+            --arg report_label "$INPUT_LABEL" \
             --argjson pr_number "$PR_NUMBER" \
-            '{commit_oid: $commit_oid, coverage_report: $coverage_report, language_name: $language_name, label: $label, pull_request_number: $pr_number}' \
+            '{"commit_oid": $commit_oid, "coverage_report": $coverage_report, "language_name": $language_name, "label": $report_label, "pull_request_number": $pr_number}' \
             > __body.json
         else
           # ref-based upload: provide ref, omit pull_request_number
@@ -94,15 +94,15 @@ runs:
             --arg ref "$REF" \
             --rawfile coverage_report __coverage_b64.txt \
             --arg language_name "$INPUT_LANGUAGE" \
-            --arg label "$INPUT_LABEL" \
-            '{commit_oid: $commit_oid, ref: $ref, coverage_report: $coverage_report, language_name: $language_name, label: $label}' \
+            --arg report_label "$INPUT_LABEL" \
+            '{"commit_oid": $commit_oid, "ref": $ref, "coverage_report": $coverage_report, "language_name": $language_name, "label": $report_label}' \
             > __body.json
         fi
 
         UPLOAD_OUTPUT=$(gh api --method PUT "/repos/${{ github.repository }}/code-coverage/report" \
           --input __body.json 2>&1) || {
           if echo "$UPLOAD_OUTPUT" | grep -qi "not authorized"; then
-            echo "::error::Coverage upload returned 403 Forbidden. Ensure the calling job has 'security-events: write' permission. See https://github.com/actions/upload-code-coverage#permissions"
+            echo "::error::Coverage upload returned 403 Forbidden. Ensure the calling job has 'code-quality: write' permission. See https://github.com/actions/upload-code-coverage#permissions"
           else
             echo "::error::Coverage upload failed: $UPLOAD_OUTPUT"
           fi

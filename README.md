@@ -25,14 +25,12 @@ The action handles everything else automatically: gzip/base64 encoding, resolvin
 
 ## Permissions
 
-The calling workflow or job must grant `security-events: write`. The action cannot declare this itself.
+The calling workflow or job must grant `code-quality: write`. The action cannot declare this itself.
 
 ```yaml
 permissions:
   contents: read
-  # Required for coverage upload. Will be reduced to code-quality:write
-  # once that permission scope is available (github/code-scanning#22168).
-  security-events: write
+  code-quality: write
 ```
 
 For push-only workflows where the action looks up PR numbers via `gh pr list`, also add `pull-requests: read`.
@@ -80,7 +78,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      security-events: write
+      code-quality: write
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -92,12 +90,6 @@ jobs:
           language: Java
           label: code-coverage/jacoco
 ```
-
-## Prerequisites
-
-The repository must have the following feature flags enabled:
-- `code_coverage_upload_api` (org-level)
-- `code_coverage_processing` (repo-level)
 
 ## Caveats
 
