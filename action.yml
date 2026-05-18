@@ -11,6 +11,10 @@ inputs:
   label:
     description: 'Label for the coverage report (e.g. "code-coverage/jacoco")'
     required: true
+  fail-on-error:
+    description: 'Whether to fail the workflow step if the upload fails'
+    required: false
+    default: 'false'
   token:
     description: 'GitHub token with code-quality:write permission'
     required: false
@@ -26,6 +30,7 @@ runs:
         INPUT_FILE: ${{ inputs.file }}
         INPUT_LANGUAGE: ${{ inputs.language }}
         INPUT_LABEL: ${{ inputs.label }}
+        FAIL_ON_ERROR: ${{ inputs.fail-on-error }}
       run: |
         set -euo pipefail
         
@@ -71,6 +76,15 @@ runs:
             --jq '.[0].number // empty' 2>/dev/null || true)
         fi
 
+        echo "::group::Upload parameters"
+        echo "  commit_oid: $COMMIT_OID"
+        echo "  ref: ${REF:-<not set>}"
+        echo "  pr_number: ${PR_NUMBER:-<not set>}"
+        echo "  language: $INPUT_LANGUAGE"
+        echo "  label: $INPUT_LABEL"
+        echo "  file: $INPUT_FILE ($(wc -c < "$INPUT_FILE" | tr -d ' ') bytes)"
+        echo "::endgroup::"
+
         # Gzip and base64-encode the report. We write to files and use jq
         # --rawfile to avoid hitting the OS argument length limit on large
         # coverage reports.
@@ -99,15 +113,43 @@ runs:
             > __body.json
         fi
 
-        UPLOAD_OUTPUT=$(gh api --method PUT "/repos/${{ github.repository }}/code-coverage/report" \
-          --input __body.json 2>&1) || {
-          if echo "$UPLOAD_OUTPUT" | grep -qi "not authorized"; then
-            echo "::error::Coverage upload returned 403 Forbidden. Ensure the calling job has 'code-quality: write' permission. See https://github.com/actions/upload-code-coverage#permissions"
-          else
-            echo "::error::Coverage upload failed: $UPLOAD_OUTPUT"
-          fi
-          rm -f __coverage_b64.txt __body.json
-          exit 1
-        }
+        HTTP_RESPONSE=$(mktemp)
+        set +e
+        gh api --method PUT "/repos/${{ github.repository }}/code-coverage/report" \
+          --input __body.json \
+          --include > "$HTTP_RESPONSE" 2>&1
+        GH_EXIT=$?
+        set -e
+        HTTP_CODE=$(grep -i "^HTTP/" "$HTTP_RESPONSE" | tail -1 | awk '{print $2}')
 
-        rm -f __coverage_b64.txt __body.json
+        RESPONSE_BODY=$(sed '1,/^\r*$/d' "$HTTP_RESPONSE")
+        rm -f __coverage_b64.txt __body.json "$HTTP_RESPONSE"
+
+        if [ -z "$HTTP_CODE" ]; then
+          echo "::error::Coverage upload failed: could not reach the API"
+          [ "$FAIL_ON_ERROR" = "true" ] && exit 1 || exit 0
+        fi
+
+        if [ "$HTTP_CODE" -ge 400 ]; then
+          if echo "$RESPONSE_BODY" | grep -qi "not authorized"; then
+            echo "::error::Coverage upload returned HTTP $HTTP_CODE. Ensure the calling job has 'code-quality: write' permission. See https://github.com/actions/upload-code-coverage#permissions"
+          else
+            echo "::error::Coverage upload failed (HTTP $HTTP_CODE): $RESPONSE_BODY"
+          fi
+          [ "$FAIL_ON_ERROR" = "true" ] && exit 1 || exit 0
+        fi
+
+        if [ "$HTTP_CODE" = "201" ]; then
+          echo "Coverage report uploaded successfully."
+        elif [ "$HTTP_CODE" = "200" ]; then
+          # HTTP 200 means the API accepted the request but did not store the
+          # report (e.g. the commit is not the latest on the branch).
+          RESPONSE_MSG=$(echo "$RESPONSE_BODY" | jq -r '.message // empty' 2>/dev/null || echo "$RESPONSE_BODY")
+          if [ -n "$RESPONSE_MSG" ]; then
+            echo "::warning::Coverage upload returned HTTP 200 (report not stored): $RESPONSE_MSG"
+          else
+            echo "::warning::Coverage upload returned HTTP 200 but expected 201. The report may not have been stored."
+          fi
+        else
+          echo "::notice::Coverage upload returned unexpected HTTP $HTTP_CODE: $RESPONSE_BODY"
+        fi
