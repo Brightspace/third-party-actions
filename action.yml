@@ -122,7 +122,7 @@ runs:
         set -e
         HTTP_CODE=$(grep -i "^HTTP/" "$HTTP_RESPONSE" | tail -1 | awk '{print $2}')
 
-        RESPONSE_BODY=$(sed '1,/^\r*$/d' "$HTTP_RESPONSE")
+        RESPONSE_BODY=$(sed 's/\r$//' "$HTTP_RESPONSE" | sed '1,/^$/d')
         rm -f __coverage_b64.txt __body.json "$HTTP_RESPONSE"
 
         if [ -z "$HTTP_CODE" ]; then
