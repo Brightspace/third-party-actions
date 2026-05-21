@@ -12,9 +12,9 @@ inputs:
     description: 'Label for the coverage report (e.g. "code-coverage/jacoco")'
     required: true
   fail-on-error:
-    description: 'Whether to fail the workflow step if the upload fails'
+    description: 'Whether to fail the workflow step if the upload fails (set to false to treat upload errors as warnings)'
     required: false
-    default: 'false'
+    default: 'true'
   token:
     description: 'GitHub token with code-quality:write permission'
     required: false
@@ -126,17 +126,18 @@ runs:
         rm -f __coverage_b64.txt __body.json "$HTTP_RESPONSE"
 
         if [ -z "$HTTP_CODE" ]; then
-          echo "::error::Coverage upload failed: could not reach the API"
-          [ "$FAIL_ON_ERROR" = "true" ] && exit 1 || exit 0
+          echo "::error::Coverage upload failed: could not reach the API. To treat upload errors as warnings, add 'fail-on-error: false' to the action inputs."
+          [ "$FAIL_ON_ERROR" != "false" ] && exit 1 || exit 0
         fi
 
         if [ "$HTTP_CODE" -ge 400 ]; then
+          HINT="To treat upload errors as warnings, add 'fail-on-error: false' to the action inputs."
           if echo "$RESPONSE_BODY" | grep -qi "not authorized"; then
-            echo "::error::Coverage upload returned HTTP $HTTP_CODE. Ensure the calling job has 'code-quality: write' permission. See https://github.com/actions/upload-code-coverage#permissions"
+            echo "::error::Coverage upload returned HTTP $HTTP_CODE. Ensure the calling job has 'code-quality: write' permission. See https://github.com/actions/upload-code-coverage#permissions. $HINT"
           else
-            echo "::error::Coverage upload failed (HTTP $HTTP_CODE): $RESPONSE_BODY"
+            echo "::error::Coverage upload failed (HTTP $HTTP_CODE): $RESPONSE_BODY. $HINT"
           fi
-          [ "$FAIL_ON_ERROR" = "true" ] && exit 1 || exit 0
+          [ "$FAIL_ON_ERROR" != "false" ] && exit 1 || exit 0
         fi
 
         if [ "$HTTP_CODE" = "201" ]; then

@@ -16,12 +16,13 @@ The action handles everything else automatically: gzip/base64 encoding, resolvin
 
 ## Inputs
 
-| Input | Required | Description |
-|-------|----------|-------------|
-| `file` | Yes | Path to the Cobertura XML coverage report |
-| `language` | Yes | Linguist language name (e.g. `Java`, `Go`, `Python`) |
-| `label` | Yes | Label for the report (e.g. `code-coverage/jacoco`) |
-| `token` | No | GitHub token (defaults to `github.token`) |
+| Input | Required | Default | Description |
+|-------|----------|---------|-------------|
+| `file` | Yes | | Path to the Cobertura XML coverage report |
+| `language` | Yes | | Linguist language name (e.g. `Java`, `Go`, `Python`) |
+| `label` | Yes | | Label for the report (e.g. `code-coverage/jacoco`) |
+| `fail-on-error` | No | `true` | Whether to fail the workflow step if the upload fails |
+| `token` | No | `github.token` | GitHub token with `code-quality:write` permission |
 
 ## Permissions
 
@@ -34,6 +35,23 @@ permissions:
 ```
 
 For push-only workflows where the action looks up PR numbers via `gh pr list`, also add `pull-requests: read`.
+
+## Error handling
+
+By default, the action fails the workflow step (exits with code 1) when the upload is unsuccessful. This ensures you notice when coverage data is not being stored.
+
+If coverage upload is best-effort in your workflow and you don't want a transient API failure to block CI, set `fail-on-error: false`:
+
+```yaml
+- uses: actions/upload-code-coverage@v1
+  with:
+    file: cobertura.xml
+    language: Java
+    label: code-coverage/jacoco
+    fail-on-error: false
+```
+
+When `fail-on-error` is `false`, upload errors are still surfaced as `::error::` annotations in the workflow log, but the step exits 0.
 
 ## Event handling
 
