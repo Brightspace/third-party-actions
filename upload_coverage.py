@@ -44,6 +44,24 @@ def log_upload_parameters(
     print("::endgroup::")
 
 
+def _extract_message(body: str) -> str:
+    """Extract the human-readable message from an API JSON response.
+
+    Falls back to the raw body if parsing fails or no message field exists.
+    We intentionally strip documentation_url and other fields because the
+    docs URL currently 404s (pre-GA).
+    TODO(GA): Once docs are live, consider including documentation_url in output.
+    """
+    try:
+        data = json.loads(body)
+        message = data.get("message", "")
+        if message:
+            return message
+    except (json.JSONDecodeError, AttributeError, TypeError):
+        pass
+    return body
+
+
 def encode_coverage_report(file_path: str) -> str:
     data = Path(file_path).read_bytes()
     return base64.b64encode(gzip.compress(data)).decode("ascii")
@@ -133,7 +151,8 @@ def handle_response(status: int, body: str, fail_on_error: bool) -> int:
         if status == 403 and "not authorized" in body.lower():
             emit_annotation("error", f"{PERMISSIONS_ERROR.format(status=status)}. {FAIL_ON_ERROR_HINT}")
         else:
-            emit_annotation("error", f"Coverage upload failed (HTTP {status}): {body}. {FAIL_ON_ERROR_HINT}")
+            display_body = _extract_message(body)
+            emit_annotation("error", f"Coverage upload failed (HTTP {status}): {display_body}. {FAIL_ON_ERROR_HINT}")
         return 1 if fail_on_error else 0
 
     # Unexpected status code

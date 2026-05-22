@@ -372,5 +372,26 @@ class UploadCoverageTests(unittest.TestCase):
         self.assertIn("fail-on-error: false", output)
 
 
+    def test_error_response_strips_documentation_url(self):
+        """Only the message field is shown, not the full JSON with documentation_url.
+
+        TODO(GA): When docs are published at docs.github.com/rest/code-quality/code-coverage,
+        include the documentation_url in the output and update this test accordingly.
+        """
+        body = json.dumps({
+            "message": "Code quality is not enabled for this repository.",
+            "documentation_url": "https://docs.github.com/rest/code-quality/code-coverage",
+            "status": "403",
+        })
+        opener = mock.Mock(return_value=FakeResponse(status=403, body=body.encode()))
+
+        exit_code, output, _ = self.run_main(opener=opener)
+
+        self.assertEqual(1, exit_code)
+        self.assertIn("Code quality is not enabled", output)
+        self.assertNotIn("documentation_url", output)
+        self.assertNotIn("docs.github.com", output)
+
+
 if __name__ == "__main__":
     unittest.main()
