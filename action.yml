@@ -31,126 +31,41 @@ runs:
         INPUT_LANGUAGE: ${{ inputs.language }}
         INPUT_LABEL: ${{ inputs.label }}
         FAIL_ON_ERROR: ${{ inputs.fail-on-error }}
+        GITHUB_EVENT_NAME: ${{ github.event_name }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_API_URL: ${{ github.api_url }}
       run: |
         set -euo pipefail
-        
-        # Support GitHub Enterprise Cloud when using gh CLI
+
         export GH_HOST="${GITHUB_SERVER_URL#*://}"
 
-        if [ ! -f "$INPUT_FILE" ]; then
-          echo "::error::Coverage file not found: $INPUT_FILE"
-          exit 1
-        fi
-
-        # Skip coverage upload for merge queue runs — coverage should be
-        # uploaded for PRs and the default branch, making merge queue
-        # uploads unnecessary.
-        if [ "${{ github.event_name }}" = "merge_group" ]; then
+        if [ "$GITHUB_EVENT_NAME" = "merge_group" ]; then
           echo "::warning::Skipping coverage upload for merge queue. Configure your workflow to upload coverage for PRs and the default branch instead. To avoid spinning up a runner, add \"if: github.event_name != 'merge_group'\" to the upload job."
           exit 0
         fi
 
-        # Skip coverage upload for fork PRs — the token won't have write
-        # permissions to the base repository.
         if [ "${{ github.event.pull_request.head.repo.full_name }}" != "" ] && \
-           [ "${{ github.event.pull_request.head.repo.full_name }}" != "${{ github.repository }}" ]; then
+           [ "${{ github.event.pull_request.head.repo.full_name }}" != "$GITHUB_REPOSITORY" ]; then
           echo "::notice::Skipping coverage upload for fork PR (from ${{ github.event.pull_request.head.repo.full_name }})"
           exit 0
         fi
 
-        # Resolve the commit SHA and ref. On pull_request events, github.sha
-        # and github.ref point to the merge commit — use the PR head instead.
-        if [ "${{ github.event_name }}" = "pull_request" ] || [ "${{ github.event_name }}" = "pull_request_target" ]; then
+        if [ "$GITHUB_EVENT_NAME" = "pull_request" ] || [ "$GITHUB_EVENT_NAME" = "pull_request_target" ]; then
           COMMIT_OID="${{ github.event.pull_request.head.sha }}"
-          REF="refs/heads/${{ github.event.pull_request.head.ref }}"
+          REF=""
           PR_NUMBER="${{ github.event.pull_request.number }}"
         else
           COMMIT_OID="${{ github.sha }}"
           REF="${{ github.ref }}"
-          # For push events, check if this branch has an open PR.
           PR_NUMBER=$(gh pr list \
-            --repo "${{ github.repository }}" \
+            --repo "$GITHUB_REPOSITORY" \
             --head "${{ github.ref_name }}" \
             --state open \
             --json number \
             --jq '.[0].number // empty' 2>/dev/null || true)
         fi
 
-        echo "::group::Upload parameters"
-        echo "  commit_oid: $COMMIT_OID"
-        echo "  ref: ${REF:-<not set>}"
-        echo "  pr_number: ${PR_NUMBER:-<not set>}"
-        echo "  language: $INPUT_LANGUAGE"
-        echo "  label: $INPUT_LABEL"
-        echo "  file: $INPUT_FILE ($(wc -c < "$INPUT_FILE" | tr -d ' ') bytes)"
-        echo "::endgroup::"
-
-        # Gzip and base64-encode the report. We write to files and use jq
-        # --rawfile to avoid hitting the OS argument length limit on large
-        # coverage reports.
-        gzip -c "$INPUT_FILE" | base64 -w 0 > __coverage_b64.txt
-
-        # The API requires either ref or pull_request_number (not both).
-        if [ -n "${PR_NUMBER:-}" ]; then
-          # pull-request-based upload: provide pull_request_number, omit ref
-          jq -n \
-            --arg commit_oid "$COMMIT_OID" \
-            --rawfile coverage_report __coverage_b64.txt \
-            --arg language_name "$INPUT_LANGUAGE" \
-            --arg report_label "$INPUT_LABEL" \
-            --argjson pr_number "$PR_NUMBER" \
-            '{"commit_oid": $commit_oid, "coverage_report": $coverage_report, "language_name": $language_name, "label": $report_label, "pull_request_number": $pr_number}' \
-            > __body.json
-        else
-          # ref-based upload: provide ref, omit pull_request_number
-          jq -n \
-            --arg commit_oid "$COMMIT_OID" \
-            --arg ref "$REF" \
-            --rawfile coverage_report __coverage_b64.txt \
-            --arg language_name "$INPUT_LANGUAGE" \
-            --arg report_label "$INPUT_LABEL" \
-            '{"commit_oid": $commit_oid, "ref": $ref, "coverage_report": $coverage_report, "language_name": $language_name, "label": $report_label}' \
-            > __body.json
-        fi
-
-        HTTP_RESPONSE=$(mktemp)
-        set +e
-        gh api --method PUT "/repos/${{ github.repository }}/code-coverage/report" \
-          --input __body.json \
-          --include > "$HTTP_RESPONSE" 2>&1
-        GH_EXIT=$?
-        set -e
-        HTTP_CODE=$(grep -i "^HTTP/" "$HTTP_RESPONSE" | tail -1 | awk '{print $2}')
-
-        RESPONSE_BODY=$(sed 's/\r$//' "$HTTP_RESPONSE" | sed '1,/^$/d')
-        rm -f __coverage_b64.txt __body.json "$HTTP_RESPONSE"
-
-        if [ -z "$HTTP_CODE" ]; then
-          echo "::error::Coverage upload failed: could not reach the API. To treat upload errors as warnings, add 'fail-on-error: false' to the action inputs."
-          [ "$FAIL_ON_ERROR" != "false" ] && exit 1 || exit 0
-        fi
-
-        if [ "$HTTP_CODE" -ge 400 ]; then
-          HINT="To treat upload errors as warnings, add 'fail-on-error: false' to the action inputs."
-          if echo "$RESPONSE_BODY" | grep -qi "not authorized"; then
-            echo "::error::Coverage upload returned HTTP $HTTP_CODE. Ensure the calling job has 'code-quality: write' permission. See https://github.com/actions/upload-code-coverage#permissions. $HINT"
-          else
-            echo "::error::Coverage upload failed (HTTP $HTTP_CODE): $RESPONSE_BODY. $HINT"
-          fi
-          [ "$FAIL_ON_ERROR" != "false" ] && exit 1 || exit 0
-        fi
-
-        if [ "$HTTP_CODE" = "201" ]; then
-          echo "Coverage report uploaded successfully."
-        elif [ "$HTTP_CODE" = "200" ]; then
-          # HTTP 200 means the API accepted the request but did not store the
-          # report (e.g. the commit is not the latest on the branch).
-          RESPONSE_MSG=$(echo "$RESPONSE_BODY" | jq -r '.message // empty' 2>/dev/null || echo "$RESPONSE_BODY")
-          if [ -n "$RESPONSE_MSG" ]; then
-            echo "::warning::Coverage upload returned HTTP 200 (report not stored): $RESPONSE_MSG"
-          else
-            echo "::warning::Coverage upload returned HTTP 200 but expected 201. The report may not have been stored."
-          fi
-        else
-          echo "::notice::Coverage upload returned unexpected HTTP $HTTP_CODE: $RESPONSE_BODY"
-        fi
+        COMMIT_OID="$COMMIT_OID" \
+        REF="$REF" \
+        PR_NUMBER="$PR_NUMBER" \
+        python3 "$GITHUB_ACTION_PATH/upload_coverage.py"
