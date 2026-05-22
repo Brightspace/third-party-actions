@@ -11,6 +11,10 @@ inputs:
   label:
     description: 'Label for the coverage report (e.g. "code-coverage/jacoco")'
     required: true
+  fail-on-error:
+    description: 'Whether to fail the workflow step if the upload fails (set to false to treat upload errors as warnings)'
+    required: false
+    default: 'true'
   token:
     description: 'GitHub token with code-quality:write permission'
     required: false
@@ -26,6 +30,7 @@ runs:
         INPUT_FILE: ${{ inputs.file }}
         INPUT_LANGUAGE: ${{ inputs.language }}
         INPUT_LABEL: ${{ inputs.label }}
+        FAIL_ON_ERROR: ${{ inputs.fail-on-error }}
         GITHUB_EVENT_NAME: ${{ github.event_name }}
         GITHUB_REPOSITORY: ${{ github.repository }}
         GITHUB_API_URL: ${{ github.api_url }}
