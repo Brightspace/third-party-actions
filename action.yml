@@ -69,3 +69,12 @@ runs:
         REF="$REF" \
         PR_NUMBER="$PR_NUMBER" \
         python3 "$GITHUB_ACTION_PATH/upload_coverage.py"
+
+    - name: Post-step telemetry
+      if: always()
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_API_URL: ${{ github.api_url }}
+      run: python3 "$GITHUB_ACTION_PATH/post_upload_coverage.py"

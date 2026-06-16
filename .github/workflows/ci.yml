@@ -12,4 +12,4 @@ jobs:
       - uses: actions/checkout@v6
 
       - name: Run unit tests
-        run: python3 -m unittest test_upload_coverage.py -v
+        run: python3 -m unittest test_upload_coverage.py test_status_report.py -v

@@ -1,0 +1,217 @@
+#!/usr/bin/env python3
+"""Telemetry status reporting for the upload-code-coverage Action.
+
+Reports action status to the monolith endpoint so we can track usage,
+errors, and performance. All public functions are safe to call in any
+context — they swallow exceptions and log warnings so telemetry never
+causes the action to fail.
+"""
+import json
+import os
+import time
+import urllib.error
+import urllib.request
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Dict, Optional
+
+
+STATUS_ENDPOINT = "/repos/{repository}/code-coverage/action/status"
+STATUS_TIMEOUT_SECONDS = 30
+
+
+def _now_iso() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def _safe_int(value: Optional[str]) -> Optional[int]:
+    if value is None:
+        return None
+    try:
+        return int(value)
+    except (ValueError, TypeError):
+        return None
+
+
+def _emit_warning(message: str) -> None:
+    print(f"::warning::{message}")
+
+
+def _gather_runner_info(env: Dict[str, str]) -> Dict[str, Any]:
+    """Collect runner environment details."""
+    info: Dict[str, Any] = {}
+    for key, field in [
+        ("RUNNER_OS", "runner_os"),
+        ("RUNNER_ARCH", "runner_arch"),
+        ("ImageVersion", "runner_image_version"),
+    ]:
+        value = env.get(key)
+        if value:
+            info[field] = value
+    return info
+
+
+def _gather_workflow_context(env: Dict[str, str]) -> Dict[str, Any]:
+    """Collect workflow/job context."""
+    ctx: Dict[str, Any] = {}
+    for key, field in [
+        ("GITHUB_WORKFLOW", "workflow_name"),
+        ("GITHUB_JOB", "job_name"),
+        ("GITHUB_EVENT_NAME", "actions_event_name"),
+        ("GITHUB_RUN_ID", "workflow_run_id"),
+        ("GITHUB_RUN_ATTEMPT", "workflow_run_attempt"),
+    ]:
+        value = env.get(key)
+        if value:
+            ctx[field] = _safe_int(value) if field in ("workflow_run_id", "workflow_run_attempt") else value
+    return ctx
+
+
+def _gather_action_metadata(env: Dict[str, str]) -> Dict[str, Any]:
+    """Collect action identity metadata."""
+    meta: Dict[str, Any] = {"action_name": "upload-code-coverage"}
+    for key, field in [
+        ("GITHUB_ACTION_REF", "action_ref"),
+        ("ACTION_VERSION", "action_version"),
+    ]:
+        value = env.get(key)
+        if value:
+            meta[field] = value
+
+    # action_oid: the SHA of the action itself
+    action_path = env.get("GITHUB_ACTION_PATH", "")
+    if action_path:
+        git_dir = Path(action_path) / ".git"
+        if git_dir.exists():
+            try:
+                head = (git_dir / "HEAD").read_text().strip()
+                meta["action_oid"] = head
+            except OSError:
+                pass
+    return meta
+
+
+def build_starting_report(env: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
+    """Build the initial "starting" status report.
+
+    This captures input parameters, runner info, and workflow context
+    at the start of execution.
+    """
+    e = dict(os.environ if env is None else env)
+
+    report: Dict[str, Any] = {
+        "status": "starting",
+        "started_at": _now_iso(),
+    }
+
+    report.update(_gather_action_metadata(e))
+    report.update(_gather_runner_info(e))
+    report.update(_gather_workflow_context(e))
+
+    # Git context
+    commit_oid = e.get("COMMIT_OID", "")
+    if commit_oid:
+        report["commit_oid"] = commit_oid
+    ref = e.get("REF", "")
+    if ref:
+        report["ref"] = ref
+
+    # User-supplied parameters
+    params: Dict[str, Any] = {}
+    if e.get("INPUT_LANGUAGE"):
+        params["language_name"] = e["INPUT_LANGUAGE"]
+    if e.get("INPUT_LABEL"):
+        params["label"] = e["INPUT_LABEL"]
+    if e.get("FAIL_ON_ERROR"):
+        params["fail_on_error"] = e["FAIL_ON_ERROR"].lower() != "false"
+    if params:
+        report["parameters"] = params
+
+    return report
+
+
+def build_completed_report(
+    starting_report: Dict[str, Any],
+    *,
+    status: str,
+    upload_duration_ms: Optional[int] = None,
+    payload_size_bytes: Optional[int] = None,
+    error_type: Optional[str] = None,
+    error_message: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Build the completion status report from a starting report.
+
+    Copies fields from the starting report and adds completion-specific
+    data like timing, outcome, and error information.
+    """
+    report = dict(starting_report)
+    report["status"] = status
+    report["completed_at"] = _now_iso()
+
+    if upload_duration_ms is not None:
+        report["upload_duration_ms"] = upload_duration_ms
+    if payload_size_bytes is not None:
+        report["payload_size_bytes"] = payload_size_bytes
+    if error_type:
+        report["error_type"] = error_type
+    if error_message:
+        report["error_message"] = error_message[:1000]
+
+    return report
+
+
+def send_status_report(
+    report: Dict[str, Any],
+    *,
+    repository: str,
+    api_url: str,
+    token: str,
+    opener=urllib.request.urlopen,
+) -> bool:
+    """Send a status report to the telemetry endpoint.
+
+    Returns True if the report was sent successfully, False otherwise.
+    Never raises — all exceptions are caught and logged as warnings.
+    """
+    try:
+        url = f"{api_url.rstrip('/')}{STATUS_ENDPOINT.format(repository=repository)}"
+        data = json.dumps(report).encode("utf-8")
+
+        request = urllib.request.Request(
+            url=url,
+            data=data,
+            headers={
+                "Authorization": f"Bearer {token}",
+                "Accept": "application/vnd.github+json",
+                "Content-Type": "application/json",
+            },
+            method="PUT",
+        )
+
+        with opener(request, timeout=STATUS_TIMEOUT_SECONDS) as response:
+            response.read()
+            return True
+    except Exception as exc:
+        _emit_warning(f"Failed to send status report: {exc}")
+        return False
+
+
+def save_state(key: str, value: str) -> None:
+    """Save state for the post step via $GITHUB_STATE."""
+    state_file = os.environ.get("GITHUB_STATE", "")
+    if state_file:
+        try:
+            with open(state_file, "a") as f:
+                # Use the multiline delimiter format for safety
+                f.write(f"{key}<<EOF\n{value}\nEOF\n")
+        except OSError as exc:
+            _emit_warning(f"Failed to save state '{key}': {exc}")
+
+
+def get_state(key: str) -> str:
+    """Read state saved by the main step.
+
+    During the post step, GitHub populates environment variables named
+    STATE_{key} from values written to $GITHUB_STATE in the main step.
+    """
+    return os.environ.get(f"STATE_{key}", "")

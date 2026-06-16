@@ -56,8 +56,13 @@ class UploadCoverageTests(unittest.TestCase):
     def run_main(self, env=None, opener=None):
         stdout = io.StringIO()
         opener = opener or mock.Mock(return_value=FakeResponse())
+        status_opener = mock.Mock(return_value=FakeResponse())
         with redirect_stdout(stdout):
-            exit_code = upload_coverage.main(environ=env or self.base_env, opener=opener)
+            exit_code = upload_coverage.main(
+                environ=env or self.base_env,
+                opener=opener,
+                status_opener=status_opener,
+            )
         return exit_code, stdout.getvalue(), opener
 
     def request_payload(self, opener):
@@ -391,6 +396,68 @@ class UploadCoverageTests(unittest.TestCase):
         self.assertIn("Code quality is not enabled", output)
         self.assertNotIn("documentation_url", output)
         self.assertNotIn("docs.github.com", output)
+
+    # --- Telemetry integration ---
+
+    def test_telemetry_sends_starting_and_success_reports(self):
+        opener = mock.Mock(return_value=FakeResponse())
+        status_opener = mock.Mock(return_value=FakeResponse())
+        stdout = io.StringIO()
+
+        with redirect_stdout(stdout):
+            upload_coverage.main(environ=self.base_env, opener=opener, status_opener=status_opener)
+
+        # Two telemetry calls: starting + success
+        self.assertEqual(2, status_opener.call_count)
+        starting_request = status_opener.call_args_list[0].args[0]
+        starting_body = json.loads(starting_request.data)
+        self.assertEqual("starting", starting_body["status"])
+
+        completed_request = status_opener.call_args_list[1].args[0]
+        completed_body = json.loads(completed_request.data)
+        self.assertEqual("success", completed_body["status"])
+        self.assertIn("completed_at", completed_body)
+        self.assertIn("upload_duration_ms", completed_body)
+        self.assertIn("payload_size_bytes", completed_body)
+
+    def test_telemetry_sends_failure_report_on_upload_error(self):
+        opener = mock.Mock(return_value=FakeResponse(status=500, body=b'{"message":"boom"}'))
+        status_opener = mock.Mock(return_value=FakeResponse())
+        stdout = io.StringIO()
+
+        with redirect_stdout(stdout):
+            upload_coverage.main(environ=self.base_env, opener=opener, status_opener=status_opener)
+
+        completed_request = status_opener.call_args_list[1].args[0]
+        completed_body = json.loads(completed_request.data)
+        self.assertEqual("failure", completed_body["status"])
+        self.assertEqual("http_500", completed_body["error_type"])
+
+    def test_telemetry_sends_user_error_on_missing_file(self):
+        env = dict(self.base_env, INPUT_FILE="/nonexistent")
+        status_opener = mock.Mock(return_value=FakeResponse())
+        stdout = io.StringIO()
+
+        with redirect_stdout(stdout):
+            upload_coverage.main(environ=env, opener=mock.Mock(), status_opener=status_opener)
+
+        completed_request = status_opener.call_args_list[1].args[0]
+        completed_body = json.loads(completed_request.data)
+        self.assertEqual("user-error", completed_body["status"])
+        self.assertEqual("file_not_found", completed_body["error_type"])
+
+    def test_telemetry_failure_does_not_affect_action_exit_code(self):
+        """Status reporting errors must never cause the action to fail."""
+        opener = mock.Mock(return_value=FakeResponse())
+        status_opener = mock.Mock(side_effect=Exception("telemetry boom"))
+        stdout = io.StringIO()
+
+        with redirect_stdout(stdout):
+            exit_code = upload_coverage.main(
+                environ=self.base_env, opener=opener, status_opener=status_opener,
+            )
+
+        self.assertEqual(0, exit_code)
 
 
 if __name__ == "__main__":

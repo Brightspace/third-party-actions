@@ -4,10 +4,13 @@ import gzip
 import json
 import os
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Mapping, Optional, Tuple
+
+import status_report
 
 
 PERMISSIONS_ERROR = (
@@ -160,12 +163,37 @@ def handle_response(status: int, body: str, fail_on_error: bool) -> int:
     return 0
 
 
-def main(environ: Optional[Mapping[str, str]] = None, opener=urllib.request.urlopen) -> int:
+def main(
+    environ: Optional[Mapping[str, str]] = None,
+    opener=urllib.request.urlopen,
+    status_opener=urllib.request.urlopen,
+) -> int:
     env = dict(os.environ if environ is None else environ)
+
+    repository = env.get("GITHUB_REPOSITORY", "")
+    api_url = env.get("GITHUB_API_URL", "https://api.github.com")
+    token = env.get("GH_TOKEN", "")
+
+    # Send "starting" telemetry report
+    starting_report = status_report.build_starting_report(env)
+    status_report.send_status_report(
+        starting_report,
+        repository=repository,
+        api_url=api_url,
+        token=token,
+        opener=status_opener,
+    )
+
+    upload_start = time.monotonic()
 
     file_path = env.get("INPUT_FILE", "")
     if not file_path or not Path(file_path).is_file():
         emit_annotation("error", f"Coverage file not found: {file_path}")
+        _send_completed_report(
+            starting_report, "user-error",
+            error_type="file_not_found", error_message=f"Coverage file not found: {file_path}",
+            repository=repository, api_url=api_url, token=token, opener=status_opener,
+        )
         return 1
 
     fail_on_error = env.get("FAIL_ON_ERROR", "true").lower() != "false"
@@ -196,17 +224,77 @@ def main(environ: Optional[Mapping[str, str]] = None, opener=urllib.request.urlo
         )
     except ValueError as error:
         emit_annotation("error", str(error))
+        _send_completed_report(
+            starting_report, "user-error",
+            error_type="invalid_input", error_message=str(error),
+            repository=repository, api_url=api_url, token=token, opener=status_opener,
+        )
         return 1
 
-    status, body = upload_report(
+    payload_size_bytes = len(json.dumps(payload).encode("utf-8"))
+
+    http_status, body = upload_report(
         payload=payload,
-        repository=env.get("GITHUB_REPOSITORY", ""),
-        api_url=env.get("GITHUB_API_URL", "https://api.github.com"),
-        token=env.get("GH_TOKEN", ""),
+        repository=repository,
+        api_url=api_url,
+        token=token,
         opener=opener,
     )
 
-    return handle_response(status, body, fail_on_error)
+    upload_duration_ms = int((time.monotonic() - upload_start) * 1000)
+    exit_code = handle_response(http_status, body, fail_on_error)
+
+    if exit_code == 0:
+        telemetry_status = "success"
+        error_type = None
+        error_message = None
+    else:
+        telemetry_status = "failure"
+        error_type = f"http_{http_status}" if http_status else "network_error"
+        error_message = _extract_message(body)
+
+    _send_completed_report(
+        starting_report, telemetry_status,
+        upload_duration_ms=upload_duration_ms,
+        payload_size_bytes=payload_size_bytes,
+        error_type=error_type, error_message=error_message,
+        repository=repository, api_url=api_url, token=token, opener=status_opener,
+    )
+
+    return exit_code
+
+
+def _send_completed_report(
+    starting_report: dict,
+    telemetry_status: str,
+    *,
+    repository: str,
+    api_url: str,
+    token: str,
+    upload_duration_ms: Optional[int] = None,
+    payload_size_bytes: Optional[int] = None,
+    error_type: Optional[str] = None,
+    error_message: Optional[str] = None,
+    opener=urllib.request.urlopen,
+) -> None:
+    """Build and send a completed status report, then mark state as sent."""
+    completed = status_report.build_completed_report(
+        starting_report,
+        status=telemetry_status,
+        upload_duration_ms=upload_duration_ms,
+        payload_size_bytes=payload_size_bytes,
+        error_type=error_type,
+        error_message=error_message,
+    )
+    status_report.send_status_report(
+        completed,
+        repository=repository,
+        api_url=api_url,
+        token=token,
+        opener=opener,
+    )
+    status_report.save_state("status_sent", "true")
+    status_report.save_state("started_at", starting_report.get("started_at", ""))
 
 
 if __name__ == "__main__":
