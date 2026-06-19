@@ -12,7 +12,6 @@ import time
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
-from pathlib import Path
 from typing import Any, Dict, Optional
 
 
@@ -78,25 +77,6 @@ def _gather_action_metadata(env: Dict[str, str]) -> Dict[str, Any]:
         if value:
             meta[field] = value
 
-    # action_oid: the SHA of the action itself
-    action_path = env.get("GITHUB_ACTION_PATH", "")
-    if action_path:
-        git_dir = Path(action_path) / ".git"
-        if git_dir.exists():
-            try:
-                head = (git_dir / "HEAD").read_text().strip()
-                # Resolve symbolic refs (e.g. "ref: refs/heads/main")
-                if head.startswith("ref: "):
-                    ref_path = git_dir / head[5:]
-                    if ref_path.exists():
-                        head = ref_path.read_text().strip()
-                    else:
-                        head = ""
-                # Only use if it looks like a 40-hex SHA
-                if len(head) == 40 and all(c in "0123456789abcdef" for c in head):
-                    meta["action_oid"] = head
-            except OSError:
-                pass
     return meta
 
 
