@@ -85,7 +85,16 @@ def _gather_action_metadata(env: Dict[str, str]) -> Dict[str, Any]:
         if git_dir.exists():
             try:
                 head = (git_dir / "HEAD").read_text().strip()
-                meta["action_oid"] = head
+                # Resolve symbolic refs (e.g. "ref: refs/heads/main")
+                if head.startswith("ref: "):
+                    ref_path = git_dir / head[5:]
+                    if ref_path.exists():
+                        head = ref_path.read_text().strip()
+                    else:
+                        head = ""
+                # Only use if it looks like a 40-hex SHA
+                if len(head) == 40 and all(c in "0123456789abcdef" for c in head):
+                    meta["action_oid"] = head
             except OSError:
                 pass
     return meta
@@ -190,6 +199,10 @@ def send_status_report(
 
         with opener(request, timeout=STATUS_TIMEOUT_SECONDS) as response:
             response.read()
+            code = getattr(response, "getcode", lambda: None)()
+            if code is not None and not (200 <= int(code) < 300):
+                _emit_warning(f"Status report request returned HTTP {code}")
+                return False
             return True
     except Exception as exc:
         _emit_warning(f"Failed to send status report: {exc}")

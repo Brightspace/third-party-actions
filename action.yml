@@ -75,6 +75,9 @@ runs:
       shell: bash
       env:
         GH_TOKEN: ${{ inputs.token }}
+        INPUT_LANGUAGE: ${{ inputs.language }}
+        INPUT_LABEL: ${{ inputs.label }}
+        FAIL_ON_ERROR: ${{ inputs.fail-on-error }}
         GITHUB_REPOSITORY: ${{ github.repository }}
         GITHUB_API_URL: ${{ github.api_url }}
       run: python3 "$GITHUB_ACTION_PATH/post_upload_coverage.py"

@@ -176,6 +176,8 @@ def main(
 
     # Send "starting" telemetry report
     starting_report = status_report.build_starting_report(env)
+    status_report.save_state("started_at", starting_report.get("started_at", ""))
+    status_report.save_state("starting_report", json.dumps(starting_report))
     status_report.send_status_report(
         starting_report,
         repository=repository,
@@ -286,15 +288,16 @@ def _send_completed_report(
         error_type=error_type,
         error_message=error_message,
     )
-    status_report.send_status_report(
+    status_report.save_state("completed_report", json.dumps(completed))
+    sent = status_report.send_status_report(
         completed,
         repository=repository,
         api_url=api_url,
         token=token,
         opener=opener,
     )
-    status_report.save_state("status_sent", "true")
-    status_report.save_state("started_at", starting_report.get("started_at", ""))
+    if sent:
+        status_report.save_state("status_sent", "true")
 
 
 if __name__ == "__main__":

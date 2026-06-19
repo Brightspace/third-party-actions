@@ -193,6 +193,20 @@ class SendStatusReportTests(unittest.TestCase):
 
         self.assertFalse(result)
 
+    def test_returns_false_on_non_2xx_response(self):
+        opener = mock.Mock(return_value=FakeResponse(status=403))
+        stdout = io.StringIO()
+
+        with redirect_stdout(stdout):
+            result = status_report.send_status_report(
+                {"status": "starting"}, repository="o/r",
+                api_url="https://api.github.com", token="t", opener=opener,
+            )
+
+        self.assertFalse(result)
+        self.assertIn("::warning::", stdout.getvalue())
+        self.assertIn("HTTP 403", stdout.getvalue())
+
     def test_passes_timeout(self):
         opener = mock.Mock(return_value=FakeResponse())
 

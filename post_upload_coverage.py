@@ -5,6 +5,7 @@ Runs after the main step (even on cancellation/failure) to ensure we
 always report a final status. If the main step already sent a completion
 report, this is a no-op.
 """
+import json
 import os
 import sys
 import urllib.request
@@ -21,13 +22,32 @@ def main() -> int:
     api_url = env.get("GITHUB_API_URL", "https://api.github.com")
     token = env.get("GH_TOKEN", "")
 
-    started_at = status_report.get_state("started_at")
+    # Try to retry the completed report if it was built but failed to send
+    completed_report_json = status_report.get_state("completed_report")
+    if completed_report_json:
+        try:
+            report = json.loads(completed_report_json)
+            status_report.send_status_report(
+                report,
+                repository=repository,
+                api_url=api_url,
+                token=token,
+            )
+            return 0
+        except (json.JSONDecodeError, TypeError):
+            pass
 
-    report = status_report.build_starting_report()
-    report["status"] = "aborted"
-    report["completed_at"] = status_report._now_iso()
-    if started_at:
-        report["started_at"] = started_at
+    # Otherwise build an "aborted" report from the saved starting report
+    starting_report_json = status_report.get_state("starting_report")
+    if starting_report_json:
+        try:
+            starting_report = json.loads(starting_report_json)
+        except (json.JSONDecodeError, TypeError):
+            starting_report = status_report.build_starting_report()
+    else:
+        starting_report = status_report.build_starting_report()
+
+    report = status_report.build_completed_report(starting_report, status="aborted")
 
     status_report.send_status_report(
         report,
