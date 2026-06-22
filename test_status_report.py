@@ -225,22 +225,22 @@ class SendStatusReportTests(unittest.TestCase):
 
 
 class SaveAndGetStateTests(unittest.TestCase):
-    def test_save_state_writes_to_github_state_file(self):
+    def test_save_state_writes_to_github_env_file(self):
         m = mock.mock_open()
-        with mock.patch.dict(os.environ, {"GITHUB_STATE": "/tmp/state"}):
+        with mock.patch.dict(os.environ, {"GITHUB_ENV": "/tmp/env"}):
             with mock.patch("builtins.open", m):
                 status_report.save_state("my_key", "my_value")
-        m.assert_called_once_with("/tmp/state", "a")
+        m.assert_called_once_with("/tmp/env", "a")
         written = "".join(call.args[0] for call in m().write.call_args_list)
-        self.assertIn("my_key", written)
+        self.assertIn("_COVERAGE_TELEMETRY_MY_KEY", written)
         self.assertIn("my_value", written)
 
-    def test_save_state_no_op_without_github_state(self):
+    def test_save_state_no_op_without_github_env(self):
         with mock.patch.dict(os.environ, {}, clear=True):
             status_report.save_state("k", "v")  # should not raise
 
     def test_get_state_reads_from_env(self):
-        with mock.patch.dict(os.environ, {"STATE_foo": "bar"}):
+        with mock.patch.dict(os.environ, {"_COVERAGE_TELEMETRY_FOO": "bar"}):
             self.assertEqual("bar", status_report.get_state("foo"))
 
     def test_get_state_returns_empty_when_missing(self):

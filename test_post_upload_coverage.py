@@ -38,7 +38,7 @@ class PostUploadCoverageTests(unittest.TestCase):
 
     def test_noop_when_status_already_sent(self):
         """Post step exits immediately if main step reported completion."""
-        with mock.patch.dict("os.environ", {**self.base_env, "STATE_status_sent": "true"}):
+        with mock.patch.dict("os.environ", {**self.base_env, "_COVERAGE_TELEMETRY_STATUS_SENT": "true"}):
             with mock.patch.object(status_report, "send_status_report") as send:
                 exit_code = post_upload_coverage.main()
 
@@ -50,9 +50,9 @@ class PostUploadCoverageTests(unittest.TestCase):
         completed = {"status": "failure", "error_type": "http_500"}
         env = {
             **self.base_env,
-            "STATE_status_sent": "",
-            "STATE_completed_report": json.dumps(completed),
-            "STATE_starting_report": json.dumps({"status": "starting"}),
+            "_COVERAGE_TELEMETRY_STATUS_SENT": "",
+            "_COVERAGE_TELEMETRY_COMPLETED_REPORT": json.dumps(completed),
+            "_COVERAGE_TELEMETRY_STARTING_REPORT": json.dumps({"status": "starting"}),
         }
         with mock.patch.dict("os.environ", env, clear=True):
             with mock.patch.object(status_report, "send_status_report", return_value=True) as send:
@@ -69,9 +69,9 @@ class PostUploadCoverageTests(unittest.TestCase):
         starting = {"status": "starting", "started_at": "2024-01-01T00:00:00+00:00", "runner_os": "Linux"}
         env = {
             **self.base_env,
-            "STATE_status_sent": "",
-            "STATE_completed_report": "",
-            "STATE_starting_report": json.dumps(starting),
+            "_COVERAGE_TELEMETRY_STATUS_SENT": "",
+            "_COVERAGE_TELEMETRY_COMPLETED_REPORT": "",
+            "_COVERAGE_TELEMETRY_STARTING_REPORT": json.dumps(starting),
         }
         with mock.patch.dict("os.environ", env, clear=True):
             with mock.patch.object(status_report, "send_status_report", return_value=True) as send:
@@ -88,9 +88,9 @@ class PostUploadCoverageTests(unittest.TestCase):
         """If no state at all, build a fresh report and send aborted."""
         env = {
             **self.base_env,
-            "STATE_status_sent": "",
-            "STATE_completed_report": "",
-            "STATE_starting_report": "",
+            "_COVERAGE_TELEMETRY_STATUS_SENT": "",
+            "_COVERAGE_TELEMETRY_COMPLETED_REPORT": "",
+            "_COVERAGE_TELEMETRY_STARTING_REPORT": "",
         }
         with mock.patch.dict("os.environ", env, clear=True):
             with mock.patch.object(status_report, "send_status_report", return_value=True) as send:
@@ -105,9 +105,9 @@ class PostUploadCoverageTests(unittest.TestCase):
         """Post step must not fail even if telemetry send throws."""
         env = {
             **self.base_env,
-            "STATE_status_sent": "",
-            "STATE_completed_report": "",
-            "STATE_starting_report": "",
+            "_COVERAGE_TELEMETRY_STATUS_SENT": "",
+            "_COVERAGE_TELEMETRY_COMPLETED_REPORT": "",
+            "_COVERAGE_TELEMETRY_STARTING_REPORT": "",
         }
         with mock.patch.dict("os.environ", env, clear=True):
             with mock.patch.object(status_report, "send_status_report", return_value=False) as send:

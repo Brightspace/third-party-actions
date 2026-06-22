@@ -188,13 +188,19 @@ def send_status_report(
 
 
 def save_state(key: str, value: str) -> None:
-    """Save state for the post step via $GITHUB_STATE."""
-    state_file = os.environ.get("GITHUB_STATE", "")
-    if state_file:
+    """Save state for the post step via $GITHUB_ENV.
+
+    In composite actions, state must be passed between steps using
+    environment variables (not $GITHUB_STATE which is for JS/Docker
+    action pre/post hooks).
+    """
+    env_file = os.environ.get("GITHUB_ENV", "")
+    if env_file:
+        # Prefix keys to avoid collisions with user env vars
+        env_key = f"_COVERAGE_TELEMETRY_{key.upper()}"
         try:
-            with open(state_file, "a") as f:
-                # Use the multiline delimiter format for safety
-                f.write(f"{key}<<EOF\n{value}\nEOF\n")
+            with open(env_file, "a") as f:
+                f.write(f"{env_key}<<EOF\n{value}\nEOF\n")
         except OSError as exc:
             _emit_warning(f"Failed to save state '{key}': {exc}")
 
@@ -202,7 +208,7 @@ def save_state(key: str, value: str) -> None:
 def get_state(key: str) -> str:
     """Read state saved by the main step.
 
-    During the post step, GitHub populates environment variables named
-    STATE_{key} from values written to $GITHUB_STATE in the main step.
+    Reads from environment variables set via $GITHUB_ENV in the main step.
     """
-    return os.environ.get(f"STATE_{key}", "")
+    env_key = f"_COVERAGE_TELEMETRY_{key.upper()}"
+    return os.environ.get(env_key, "")
