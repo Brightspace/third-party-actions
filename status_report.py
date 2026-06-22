@@ -63,19 +63,24 @@ def _gather_workflow_context(env: Dict[str, str]) -> Dict[str, Any]:
         value = env.get(key)
         if value:
             ctx[field] = _safe_int(value) if field in ("workflow_run_id", "workflow_run_attempt") else value
+
+    # job_run_uuid: unique identifier for this job run
+    job_run_uuid = env.get("JOB_RUN_UUID", "")
+    if job_run_uuid:
+        ctx["job_run_uuid"] = job_run_uuid
+
     return ctx
 
 
 def _gather_action_metadata(env: Dict[str, str]) -> Dict[str, Any]:
     """Collect action identity metadata."""
-    meta: Dict[str, Any] = {"action_name": "upload-code-coverage"}
-    for key, field in [
-        ("GITHUB_ACTION_REF", "action_ref"),
-        ("ACTION_VERSION", "action_version"),
-    ]:
-        value = env.get(key)
-        if value:
-            meta[field] = value
+    meta: Dict[str, Any] = {
+        "action_name": "upload-code-coverage",
+        "action_version": env.get("ACTION_VERSION", "unknown"),
+    }
+    action_ref = env.get("GITHUB_ACTION_REF", "")
+    if action_ref:
+        meta["action_ref"] = action_ref
 
     return meta
 
@@ -97,24 +102,17 @@ def build_starting_report(env: Optional[Dict[str, str]] = None) -> Dict[str, Any
     report.update(_gather_runner_info(e))
     report.update(_gather_workflow_context(e))
 
-    # Git context
-    commit_oid = e.get("COMMIT_OID", "")
-    if commit_oid:
-        report["commit_oid"] = commit_oid
+    # Git context (commit_oid is required by the endpoint)
+    report["commit_oid"] = e.get("COMMIT_OID", "")
     ref = e.get("REF", "")
     if ref:
         report["ref"] = ref
 
-    # User-supplied parameters
-    params: Dict[str, Any] = {}
+    # User-supplied parameters (top-level fields to match endpoint schema)
     if e.get("INPUT_LANGUAGE"):
-        params["language_name"] = e["INPUT_LANGUAGE"]
+        report["language_name"] = e["INPUT_LANGUAGE"]
     if e.get("INPUT_LABEL"):
-        params["label"] = e["INPUT_LABEL"]
-    if e.get("FAIL_ON_ERROR"):
-        params["fail_on_error"] = e["FAIL_ON_ERROR"].lower() != "false"
-    if params:
-        report["parameters"] = params
+        report["category"] = e["INPUT_LABEL"]
 
     return report
 

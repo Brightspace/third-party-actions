@@ -32,6 +32,10 @@ class BuildStartingReportTests(unittest.TestCase):
         self.assertEqual("starting", report["status"])
         self.assertIn("started_at", report)
 
+    def test_action_version_defaults_to_unknown(self):
+        report = status_report.build_starting_report(env={})
+        self.assertEqual("unknown", report["action_version"])
+
     def test_captures_action_metadata(self):
         env = {"GITHUB_ACTION_REF": "v1", "ACTION_VERSION": "1.0.0"}
         report = status_report.build_starting_report(env=env)
@@ -74,16 +78,17 @@ class BuildStartingReportTests(unittest.TestCase):
             "FAIL_ON_ERROR": "true",
         }
         report = status_report.build_starting_report(env=env)
-        self.assertEqual("Python", report["parameters"]["language_name"])
-        self.assertEqual("code-coverage/test", report["parameters"]["label"])
-        self.assertTrue(report["parameters"]["fail_on_error"])
+        self.assertEqual("Python", report["language_name"])
+        self.assertEqual("code-coverage/test", report["category"])
 
     def test_omits_empty_fields(self):
         report = status_report.build_starting_report(env={})
         self.assertNotIn("runner_os", report)
-        self.assertNotIn("commit_oid", report)
         self.assertNotIn("ref", report)
-        self.assertNotIn("parameters", report)
+        self.assertNotIn("language_name", report)
+        self.assertNotIn("category", report)
+        # commit_oid is always present (required, defaults to "")
+        self.assertIn("commit_oid", report)
 
 
 class BuildCompletedReportTests(unittest.TestCase):
@@ -96,7 +101,7 @@ class BuildCompletedReportTests(unittest.TestCase):
     def test_inherits_starting_fields(self):
         completed = status_report.build_completed_report(self.starting, status="success")
         self.assertEqual("Linux", completed["runner_os"])
-        self.assertEqual("Go", completed["parameters"]["language_name"])
+        self.assertEqual("Go", completed["language_name"])
 
     def test_sets_status_and_completed_at(self):
         completed = status_report.build_completed_report(self.starting, status="failure")
