@@ -1,5 +1,6 @@
 import io
 import json
+import os
 import unittest
 from contextlib import redirect_stdout
 from unittest import mock
@@ -247,8 +248,6 @@ class SaveAndGetStateTests(unittest.TestCase):
         with mock.patch.dict(os.environ, {}, clear=True):
             self.assertEqual("", status_report.get_state("missing"))
 
-
-import os
 
 if __name__ == "__main__":
     unittest.main()

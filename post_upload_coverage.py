@@ -8,7 +8,6 @@ report, this is a no-op.
 import json
 import os
 import sys
-import urllib.request
 
 import status_report
 
