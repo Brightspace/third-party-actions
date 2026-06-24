@@ -69,3 +69,16 @@ runs:
         REF="$REF" \
         PR_NUMBER="$PR_NUMBER" \
         python3 "$GITHUB_ACTION_PATH/upload_coverage.py"
+
+    - name: Post-step telemetry
+      if: always() && env._COVERAGE_TELEMETRY_STARTED_AT != ''
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        INPUT_LANGUAGE: ${{ inputs.language }}
+        INPUT_LABEL: ${{ inputs.label }}
+        FAIL_ON_ERROR: ${{ inputs.fail-on-error }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        GITHUB_API_URL: ${{ github.api_url }}
+        COMMIT_OID: ${{ github.event.pull_request.head.sha || github.sha }}
+      run: python3 "$GITHUB_ACTION_PATH/post_upload_coverage.py"
