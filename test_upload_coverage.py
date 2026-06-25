@@ -433,6 +433,20 @@ class UploadCoverageTests(unittest.TestCase):
         self.assertEqual("failure", completed_body["status"])
         self.assertEqual("http_500", completed_body["error_type"])
 
+    def test_telemetry_sends_user_error_on_4xx_upload_response(self):
+        """4xx HTTP responses indicate user misconfiguration, not service failures."""
+        opener = mock.Mock(return_value=FakeResponse(status=403, body=b'{"message":"Code quality is not enabled"}'))
+        status_opener = mock.Mock(return_value=FakeResponse())
+        stdout = io.StringIO()
+
+        with redirect_stdout(stdout):
+            upload_coverage.main(environ=self.base_env, opener=opener, status_opener=status_opener)
+
+        completed_request = status_opener.call_args_list[1].args[0]
+        completed_body = json.loads(completed_request.data)
+        self.assertEqual("user-error", completed_body["status"])
+        self.assertEqual("http_403", completed_body["error_type"])
+
     def test_telemetry_sends_user_error_on_missing_file(self):
         env = dict(self.base_env, INPUT_FILE="/nonexistent")
         status_opener = mock.Mock(return_value=FakeResponse())

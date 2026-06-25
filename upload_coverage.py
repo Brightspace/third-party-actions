@@ -251,7 +251,10 @@ def main(
         error_type = None
         error_message = None
     else:
-        telemetry_status = "failure"
+        if http_status and 400 <= http_status < 500:
+            telemetry_status = "user-error"
+        else:
+            telemetry_status = "failure"
         error_type = f"http_{http_status}" if http_status else "network_error"
         error_message = _extract_message(body)
 
