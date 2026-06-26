@@ -246,10 +246,16 @@ def main(
     upload_duration_ms = int((time.monotonic() - upload_start) * 1000)
     exit_code = handle_response(http_status, body, fail_on_error)
 
-    if exit_code == 0:
+    # Derive telemetry status from http_status (not exit_code) so that
+    # fail-on-error:false still reports failures/user-errors to Datadog.
+    if http_status and 200 <= http_status < 300:
         telemetry_status = "success"
         error_type = None
         error_message = None
+    elif http_status and 400 <= http_status < 500:
+        telemetry_status = "user-error"
+        error_type = f"http_{http_status}"
+        error_message = _extract_message(body)
     else:
         telemetry_status = "failure"
         error_type = f"http_{http_status}" if http_status else "network_error"
