@@ -9,6 +9,8 @@ from pathlib import Path
 from tempfile import mkdtemp
 from urllib.error import HTTPError, URLError
 from unittest import mock
+from unittest.mock import patch
+
 
 import upload_coverage
 
@@ -31,7 +33,7 @@ class FakeResponse:
         return self.status
 
 
-class FakeClock:
+class FakeTime:
     def __init__(self):
         self.now = 0.0
 
@@ -75,19 +77,20 @@ class UploadCoverageTests(unittest.TestCase):
         stdout = io.StringIO()
         opener = opener or self.successful_opener()
         status_opener = mock.Mock(return_value=FakeResponse())
-        clock = FakeClock()
         with redirect_stdout(stdout):
-            exit_code = upload_coverage.main(
-                environ=env or self.base_env,
-                opener=opener,
-                status_opener=status_opener,
-                sleep=clock.sleep,
-                monotonic=clock.monotonic,
-            )
+            fake_time = FakeTime()
+            with patch("upload_coverage.time.monotonic", side_effect=fake_time.monotonic), patch(
+                "upload_coverage.time.sleep", side_effect=fake_time.sleep
+            ):
+                exit_code = upload_coverage.main(
+                    environ=env or self.base_env,
+                    opener=opener,
+                    status_opener=status_opener,
+                )
         return exit_code, stdout.getvalue(), opener
 
     def request_payload(self, opener):
-        request = opener.call_args_list[0].args[0]
+        request = opener.call_args.args[0]
         return json.loads(request.data.decode("utf-8"))
 
     # --- File validation ---

@@ -192,9 +192,7 @@ def wait_for_processing(
     api_url: str,
     token: str,
     timeout_seconds: int,
-    opener=urllib.request.urlopen,
-    sleep=time.sleep,
-    monotonic=time.monotonic,
+    opener=urllib.request.urlopen
 ) -> Optional[str]:
     """
     Wait for the coverage report processing to finish, up to a timeout.
@@ -202,11 +200,11 @@ def wait_for_processing(
     """
     print("::group::Waiting for processing to finish")
     try:
-        deadline = monotonic() + timeout_seconds
+        deadline = time.monotonic() + timeout_seconds
         status_check_backoff = STATUS_CHECK_INITIAL_BACKOFF_SECONDS
 
         while True:
-            remaining = deadline - monotonic()
+            remaining = deadline - time.monotonic()
             if remaining <= 0:
                 raise CategorisedError(
                     f"Timed out waiting {timeout_seconds} seconds for coverage report processing to finish",
@@ -215,7 +213,7 @@ def wait_for_processing(
 
             sleep_time = min(status_check_backoff, remaining)
             print(f"Sleeping for {sleep_time} seconds before checking processing status...")
-            sleep(sleep_time)
+            time.sleep(sleep_time)
 
             status_code, body = fetch_upload_status(
                 coverage_report_id=coverage_report_id,
@@ -277,8 +275,6 @@ def main(
     environ: Optional[Mapping[str, str]] = None,
     opener=urllib.request.urlopen,
     status_opener=urllib.request.urlopen,
-    sleep=time.sleep,
-    monotonic=time.monotonic,
 ) -> int:
     env = dict(os.environ if environ is None else environ)
 
@@ -389,9 +385,7 @@ def main(
                 repository=repository,
                 api_url=api_url,
                 token=token,
-                opener=opener,
-                sleep=sleep,
-                monotonic=monotonic
+                opener=opener
             )
             if error_msg:
                 emit_annotation("error", f"{error_msg}. {FAIL_ON_ERROR_HINT}")
