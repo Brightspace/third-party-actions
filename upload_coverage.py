@@ -262,14 +262,8 @@ def wait_for_processing(
         deadline = time.monotonic() + timeout_seconds
         status_check_backoff = STATUS_CHECK_INITIAL_BACKOFF_SECONDS
 
-        while True:
-            remaining = deadline - time.monotonic()
-            if remaining <= 0:
-                raise CategorisedError(
-                    f"Timed out waiting {timeout_seconds} seconds for coverage report processing to finish",
-                    "processing_timeout",
-                )   
-
+        while (remaining := deadline - time.monotonic()) > 0:
+            # Also sleep initially since processing is guaranteed to take at least a few seconds
             sleep_time = min(status_check_backoff, remaining)
             print(f"Sleeping for {sleep_time} seconds before checking processing status...")
             time.sleep(sleep_time)
@@ -284,6 +278,10 @@ def wait_for_processing(
             if completed:
                 return error_message
             status_check_backoff *= STATUS_CHECK_BACKOFF_MULTIPLIER
+        raise CategorisedError(
+                    f"Timed out waiting {timeout_seconds} seconds for coverage report processing to finish",
+                    "processing_timeout",
+                )
     finally:
         print("::endgroup::")
 
