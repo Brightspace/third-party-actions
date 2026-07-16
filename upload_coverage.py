@@ -59,20 +59,17 @@ def _extract_message(body: str) -> str:
     docs URL currently 404s (pre-GA).
     TODO(GA): Once docs are live, consider including documentation_url in output.
     """
-    try:
-        data = json.loads(body)
-        message = data.get("message", "")
-        if message:
-            return message
-    except (json.JSONDecodeError, AttributeError, TypeError):
-        pass
+    data = _load_json_object(body)
+    message = data.get("message", "")
+    if message:
+        return message
     return body
 
 
 def parse_response(body: str) -> str:
     """Parse the coverage report ID from a successful upload response.
     """
-    coverage_report_id = json.loads(body).get("id")
+    coverage_report_id = _load_json_object(body).get("id")
     if not coverage_report_id:
         error_message = "Coverage upload succeeded but the response did not include an upload id"
         raise CategorisedError(error_message, "missing_upload_id")
