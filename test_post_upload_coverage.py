@@ -1,7 +1,5 @@
-import io
 import json
 import unittest
-from contextlib import redirect_stdout
 from unittest import mock
 
 import post_upload_coverage
@@ -110,7 +108,7 @@ class PostUploadCoverageTests(unittest.TestCase):
             "_COVERAGE_TELEMETRY_STARTING_REPORT": "",
         }
         with mock.patch.dict("os.environ", env, clear=True):
-            with mock.patch.object(status_report, "send_status_report", return_value=False) as send:
+            with mock.patch.object(status_report, "send_status_report", return_value=False):
                 exit_code = post_upload_coverage.main()
 
         self.assertEqual(0, exit_code)
