@@ -82,7 +82,7 @@ def _load_json_object(body: str) -> dict:
         return {}
     return data if isinstance(data, dict) else {}
 
-def _parseWaitForProcessingTimeout(raw_value: str) -> int:
+def _parse_wait_for_processing_timeout(raw_value: str) -> int:
     try:
         value = int(raw_value)
     except (ValueError, TypeError) as error:
@@ -191,7 +191,7 @@ def _handle_processing_status_response(body: str) -> Tuple[bool, Optional[str]]:
     string containing an error message if processing failed.
     """
     data = _load_json_object(body)
-    processing_status = data.get("processing_status", "'<missing>'")
+    processing_status = data.get("processing_status", "<missing>")
     print(f"Coverage upload processing status: {processing_status}.")
 
     if processing_status in ("pending", "processing"):
@@ -279,9 +279,9 @@ def wait_for_processing(
                 return error_message
             status_check_backoff *= STATUS_CHECK_BACKOFF_MULTIPLIER
         raise CategorisedError(
-                    f"Timed out waiting {timeout_seconds} seconds for coverage report processing to finish",
-                    "processing_timeout",
-                )
+                f"Timed out waiting {timeout_seconds} seconds for coverage report processing to finish",
+                "processing_timeout",
+            )
     finally:
         print("::endgroup::")
 
@@ -342,7 +342,7 @@ def main(
     label = env.get("INPUT_LABEL", "")
 
     try:
-        wait_for_processing_timeout = _parseWaitForProcessingTimeout(env.get("WAIT_FOR_PROCESSING_TIMEOUT"))
+        wait_for_processing_timeout = _parse_wait_for_processing_timeout(env.get("WAIT_FOR_PROCESSING_TIMEOUT"))
     except ValueError as error:
         emit_annotation("error", str(error))
         _send_completed_report(
@@ -423,7 +423,7 @@ def main(
                 )
                 return 1 if fail_on_error else 0
         except CategorisedError as error:
-            emit_annotation("error", f"Checking coverage upload status failed: {error}. {FAIL_ON_ERROR_HINT}")
+            emit_annotation("error", f"Waiting for coverage report processing failed: {error}. {FAIL_ON_ERROR_HINT}")
             _send_completed_report(
                 starting_report, "failure",
                 error_type=error.type, error_message=str(error),

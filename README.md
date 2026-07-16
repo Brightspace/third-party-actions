@@ -22,7 +22,7 @@ The action handles everything else automatically: gzip/base64 encoding, resolvin
 | `language` | Yes | | Linguist language name (e.g. `Java`, `Go`, `Python`) |
 | `label` | Yes | | Label for the report (e.g. `code-coverage/jacoco`) |
 | `fail-on-error` | No | `true` | Whether to fail the workflow step if the upload fails |
-| `wait-for-processing-timeout` | No | `155` | How many seconds to wait for processing before failing the step. Set to 0 to disable waiting |
+| `wait-for-processing-timeout` | No | `160` | How many seconds to wait for processing before failing the step. Set to 0 to disable waiting |
 | `token` | No | `github.token` | GitHub token with `code-quality:write` permission |
 
 ## Permissions
