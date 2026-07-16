@@ -25,6 +25,7 @@ FAIL_ON_ERROR_HINT = (
 
 STATUS_CHECK_INITIAL_BACKOFF_SECONDS = 5
 STATUS_CHECK_BACKOFF_MULTIPLIER = 2
+STATUS_CHECK_MAX_BACKOFF_SECONDS = 60
 
 
 def emit_annotation(level: str, message: str) -> None:
@@ -277,7 +278,7 @@ def wait_for_processing(
             )
             if completed:
                 return error_message
-            status_check_backoff *= STATUS_CHECK_BACKOFF_MULTIPLIER
+            status_check_backoff = min(status_check_backoff * STATUS_CHECK_BACKOFF_MULTIPLIER, STATUS_CHECK_MAX_BACKOFF_SECONDS)
         raise CategorisedError(
                 f"Timed out waiting {timeout_seconds} seconds for coverage report processing to finish",
                 "processing_timeout",
