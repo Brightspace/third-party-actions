@@ -22,8 +22,11 @@ FAIL_ON_ERROR_HINT = (
     "To treat upload errors as warnings, add 'fail-on-error: false' to the action inputs."
 )
 
+DOCS_URL = "https://docs.github.com/en/code-security/how-tos/maintain-quality-code/set-up-code-coverage"
 
 def emit_annotation(level: str, message: str) -> None:
+    if level in {"error", "warning"}:
+        message = f"{message}. See {DOCS_URL} for more information."
     print(f"::{level}::{message}")
 
 
@@ -51,9 +54,6 @@ def _extract_message(body: str) -> str:
     """Extract the human-readable message from an API JSON response.
 
     Falls back to the raw body if parsing fails or no message field exists.
-    We intentionally strip documentation_url and other fields because the
-    docs URL currently 404s (pre-GA).
-    TODO(GA): Once docs are live, consider including documentation_url in output.
     """
     try:
         data = json.loads(body)

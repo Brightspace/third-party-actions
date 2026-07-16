@@ -376,26 +376,37 @@ class UploadCoverageTests(unittest.TestCase):
 
         self.assertIn("fail-on-error: false", output)
 
+    # --- emit_annotation docs link ---
 
-    def test_error_response_strips_documentation_url(self):
-        """Only the message field is shown, not the full JSON with documentation_url.
+    def test_emit_annotation_error_appends_docs_url(self):
+        stdout = io.StringIO()
+        with redirect_stdout(stdout):
+            upload_coverage.emit_annotation("error", "boom")
+        output = stdout.getvalue()
 
-        TODO(GA): When docs are published at docs.github.com/rest/code-quality/code-coverage,
-        include the documentation_url in the output and update this test accordingly.
-        """
-        body = json.dumps({
-            "message": "Code quality is not enabled for this repository.",
-            "documentation_url": "https://docs.github.com/rest/code-quality/code-coverage",
-            "status": "403",
-        })
-        opener = mock.Mock(return_value=FakeResponse(status=403, body=body.encode()))
+        self.assertTrue(
+        output.rstrip("\n").endswith(f"See {upload_coverage.DOCS_URL} for more information."),
+        msg=f"unexpected output: {output!r}",
+)
 
-        exit_code, output, _ = self.run_main(opener=opener)
+    def test_emit_annotation_warning_appends_docs_url(self):
+        stdout = io.StringIO()
+        with redirect_stdout(stdout):
+            upload_coverage.emit_annotation("warning", "heads up")
+        output = stdout.getvalue()
 
-        self.assertEqual(1, exit_code)
-        self.assertIn("Code quality is not enabled", output)
-        self.assertNotIn("documentation_url", output)
-        self.assertNotIn("docs.github.com", output)
+        self.assertTrue(
+        output.rstrip("\n").endswith(f"See {upload_coverage.DOCS_URL} for more information."),
+        msg=f"unexpected output: {output!r}",
+)
+
+    def test_emit_annotation_notice_omits_docs_url(self):
+        stdout = io.StringIO()
+        with redirect_stdout(stdout):
+            upload_coverage.emit_annotation("notice", "fyi")
+        output = stdout.getvalue()
+
+        self.assertNotIn(upload_coverage.DOCS_URL, output)
 
     # --- Telemetry integration ---
 
