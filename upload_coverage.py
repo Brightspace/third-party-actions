@@ -26,7 +26,9 @@ DOCS_URL = "https://docs.github.com/en/code-security/how-tos/maintain-quality-co
 
 def emit_annotation(level: str, message: str) -> None:
     if level in {"error", "warning"}:
-        message = f"{message}. See {DOCS_URL} for more information."
+        trimmed = message.rstrip()
+        sep = "" if trimmed.endswith((".", "!", "?")) else "."
+        message = f"{trimmed}{sep} See {DOCS_URL} for more information."
     print(f"::{level}::{message}")
 
 

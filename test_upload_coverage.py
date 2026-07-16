@@ -385,9 +385,9 @@ class UploadCoverageTests(unittest.TestCase):
         output = stdout.getvalue()
 
         self.assertTrue(
-        output.rstrip("\n").endswith(f"See {upload_coverage.DOCS_URL} for more information."),
-        msg=f"unexpected output: {output!r}",
-)
+            output.rstrip("\n").endswith(f"See {upload_coverage.DOCS_URL} for more information."),
+            msg=f"unexpected output: {output!r}",
+        )
 
     def test_emit_annotation_warning_appends_docs_url(self):
         stdout = io.StringIO()
@@ -396,9 +396,9 @@ class UploadCoverageTests(unittest.TestCase):
         output = stdout.getvalue()
 
         self.assertTrue(
-        output.rstrip("\n").endswith(f"See {upload_coverage.DOCS_URL} for more information."),
-        msg=f"unexpected output: {output!r}",
-)
+            output.rstrip("\n").endswith(f"See {upload_coverage.DOCS_URL} for more information."),
+            msg=f"unexpected output: {output!r}",
+        )
 
     def test_emit_annotation_notice_omits_docs_url(self):
         stdout = io.StringIO()
