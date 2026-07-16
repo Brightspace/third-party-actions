@@ -18,7 +18,7 @@ inputs:
   wait-for-processing-timeout:
     description: 'How many seconds to wait for coverage report processing before failing the step. Set to 0 to disable waiting'
     required: false
-    default: '155'
+    default: '160'
   token:
     description: 'GitHub token with code-quality:write permission'
     required: false
