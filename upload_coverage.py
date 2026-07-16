@@ -286,8 +286,11 @@ def wait_for_processing(
         print("::endgroup::")
 
 
-def handle_response(status: int, body: str):
-    """Process the upload response. Returns the process exit code."""
+def handle_response(status: int, body: str) -> None:
+    """Process the upload response.
+
+    Prints a success message for 2XX responses, and raises CategorisedError for failures.
+    """
     if status == 0:
         raise CategorisedError("could not reach the API", "network_error")
     elif 200 <= status < 300:
