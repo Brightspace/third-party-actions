@@ -2,6 +2,7 @@ import base64
 import gzip
 import io
 import json
+import re
 import shutil
 import unittest
 from contextlib import redirect_stdout
@@ -143,12 +144,18 @@ class UploadCoverageTests(unittest.TestCase):
 
         exit_code, output, _ = self.run_main(env=env, opener=opener)
 
-        self.assertIn("Starting coverage upload..", output)
-        self.assertIn("Coverage report uploaded successfully.", output)
-        self.assertIn("Waiting for processing to finish", output)
-        self.assertIn("Coverage upload processing status: pending.", output)
-        self.assertIn("Coverage upload processing status: succeeded.", output)
-        self.assertIn("Coverage report processing finished successfully.", output)
+        self.assertRegex(
+            output,
+            re.compile(
+                r"Starting\ coverage\ upload\.\."
+                r".*Coverage\ report\ uploaded\ successfully\."
+                r".*Waiting\ for\ processing\ to\ finish"
+                r".*Coverage\ upload\ processing\ status:\ pending\."
+                r".*Coverage\ upload\ processing\ status:\ succeeded\."
+                r".*Coverage\ report\ processing\ finished\ successfully\.",
+                re.DOTALL,
+            ),
+        )
         self.assertEqual(0, exit_code)
         self.assertEqual(3, opener.call_count)
 
