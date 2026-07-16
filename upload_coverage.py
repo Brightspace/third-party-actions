@@ -182,6 +182,68 @@ def fetch_upload_status(
         return 0, str(error.reason)
 
 
+def _handle_processing_status_response(body: str) -> Tuple[bool, Optional[str]]:
+    """
+    Handle the processing status response from the coverage upload API.
+
+    Returns a tuple (completed, error_message), where completed is a boolean
+    indicating whether processing has finished, and error_message is an optional
+    string containing an error message if processing failed.
+    """
+    data = _load_json_object(body)
+    processing_status = data.get("processing_status", "'<missing>'")
+    print(f"Coverage upload processing status: {processing_status}.")
+
+    if processing_status in ("pending", "processing"):
+        return False, None
+    if processing_status == "succeeded":
+        print("Coverage report processing finished successfully.")
+        return True, None
+    if processing_status == "failed":
+        errors = data.get("errors")
+        message = "Coverage report processing failed"
+        if isinstance(errors, list) and errors:
+            message = f"{message}: {'; '.join(str(error) for error in errors)}"
+        return True, message
+
+    emit_annotation(
+        "warning",
+        "Coverage upload status response did not include a valid processing_status. Retrying until timeout.",
+    )
+    return False, None
+
+
+def _check_processing_status(
+    *,
+    coverage_report_id: str,
+    repository: str,
+    api_url: str,
+    token: str,
+    opener=urllib.request.urlopen,
+) -> Tuple[bool, Optional[str]]:
+    status_code, body = fetch_upload_status(
+        coverage_report_id=coverage_report_id,
+        repository=repository,
+        api_url=api_url,
+        token=token,
+        opener=opener,
+    )
+
+    if 200 <= status_code < 300:
+        return _handle_processing_status_response(body)
+    if status_code and 400 <= status_code < 500:
+        raise CategorisedError(
+            f"Checking coverage upload status failed (HTTP {status_code}): {_extract_message(body)}",
+            f"status_check_http_{status_code}",
+        )
+
+    emit_annotation(
+        "warning",
+        f"Checking coverage upload status failed with HTTP status code '{status_code}'. Retrying until timeout.",
+    )
+    return False, None
+
+
 def wait_for_processing(
     *,
     coverage_report_id: str,
@@ -212,45 +274,15 @@ def wait_for_processing(
             print(f"Sleeping for {sleep_time} seconds before checking processing status...")
             time.sleep(sleep_time)
 
-            status_code, body = fetch_upload_status(
+            completed, error_message = _check_processing_status(
                 coverage_report_id=coverage_report_id,
                 repository=repository,
                 api_url=api_url,
                 token=token,
                 opener=opener,
             )
-
-            if 200 <= status_code < 300:
-                data = _load_json_object(body)
-                processing_status = data.get("processing_status", "'<missing>'")
-                print(f"Coverage upload processing status: {processing_status}.")
-
-                if processing_status in ("pending", "processing"):
-                    pass
-                elif processing_status == "succeeded":
-                    print("Coverage report processing finished successfully.")
-                    return None
-                elif processing_status == "failed":
-                    errors = data.get("errors")
-                    message = "Coverage report processing failed"
-                    if isinstance(errors, list) and errors:
-                        message = f"{message}: {'; '.join(str(error) for error in errors)}"
-                    return message
-                else:
-                    emit_annotation(
-                        "warning",
-                        "Coverage upload status response did not include a valid processing_status. Retrying until timeout.",
-                    )
-            elif status_code and 400 <= status_code < 500:
-                raise CategorisedError(
-                    f"Checking coverage upload status failed (HTTP {status_code}): {_extract_message(body)}",
-                    f"status_check_http_{status_code}",
-                )
-            else:
-                emit_annotation(
-                    "warning",
-                    f"Checking coverage upload status failed with HTTP status code '{status_code}'. Retrying until timeout.",
-                )
+            if completed:
+                return error_message
             status_check_backoff *= STATUS_CHECK_BACKOFF_MULTIPLIER
     finally:
         print("::endgroup::")
