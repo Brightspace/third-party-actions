@@ -106,13 +106,6 @@ class UploadCoverageTests(unittest.TestCase):
 
     # --- Successful uploads ---
 
-    def test_201_exits_zero_with_success_message(self):
-        exit_code, output, opener = self.run_main()
-
-        self.assertEqual(0, exit_code)
-        self.assertIn("Coverage report uploaded successfully.", output)
-        opener.assert_called_once()
-
     def test_successful_with_pr_number_uses_pull_request_number(self):
         env = dict(self.base_env, REF="", PR_NUMBER="42")
         exit_code, _, opener = self.run_main(env=env)
@@ -150,6 +143,8 @@ class UploadCoverageTests(unittest.TestCase):
 
         exit_code, output, _ = self.run_main(env=env, opener=opener)
 
+        self.assertIn("Starting coverage upload..", output)
+        self.assertIn("Coverage report uploaded successfully.", output)
         self.assertIn("Waiting for processing to finish", output)
         self.assertIn("Coverage upload processing status: pending.", output)
         self.assertIn("Coverage upload processing status: succeeded.", output)

@@ -384,6 +384,7 @@ def main(
 
     payload_size_bytes = len(json.dumps(payload).encode("utf-8"))
 
+    print("Starting coverage upload..")
     http_status, body = upload_report(
         payload=payload,
         repository=repository,
