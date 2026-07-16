@@ -86,9 +86,9 @@ def _parse_wait_for_processing_timeout(raw_value: str) -> int:
     try:
         value = int(raw_value)
     except (ValueError, TypeError) as error:
-        raise ValueError(f"WAIT_FOR_PROCESSING_TIMEOUT must be a non-negative integer")
+        raise ValueError("WAIT_FOR_PROCESSING_TIMEOUT must be a non-negative integer")
     if value < 0:
-        raise ValueError(f"WAIT_FOR_PROCESSING_TIMEOUT must be a non-negative integer")
+        raise ValueError("WAIT_FOR_PROCESSING_TIMEOUT must be a non-negative integer")
     return value
 
 
