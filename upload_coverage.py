@@ -86,7 +86,7 @@ def _load_json_object(body: str) -> dict:
 def _parse_wait_for_processing_timeout(raw_value: str) -> int:
     try:
         value = int(raw_value)
-    except (ValueError, TypeError) as error:
+    except (ValueError, TypeError):
         raise ValueError("WAIT_FOR_PROCESSING_TIMEOUT must be a non-negative integer")
     if value < 0:
         raise ValueError("WAIT_FOR_PROCESSING_TIMEOUT must be a non-negative integer")

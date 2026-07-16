@@ -7,7 +7,7 @@ import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
 from tempfile import mkdtemp
-from urllib.error import HTTPError, URLError
+from urllib.error import URLError
 from unittest import mock
 from unittest.mock import patch
 
