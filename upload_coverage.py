@@ -193,7 +193,7 @@ def _handle_processing_status_response(body: str) -> Tuple[bool, Optional[str]]:
     """
     data = _load_json_object(body)
     processing_status = data.get("processing_status", "<missing>")
-    print(f"Coverage upload processing status: {processing_status}.")
+    print(f"Coverage report processing status: {processing_status}.")
 
     if processing_status in ("pending", "processing"):
         return False, None
@@ -209,7 +209,7 @@ def _handle_processing_status_response(body: str) -> Tuple[bool, Optional[str]]:
 
     emit_annotation(
         "warning",
-        "Coverage upload status response did not include a valid processing_status. Retrying until timeout.",
+        "Coverage report processing status response did not include a valid processing_status. Retrying until timeout.",
     )
     return False, None
 
@@ -234,13 +234,13 @@ def _check_processing_status(
         return _handle_processing_status_response(body)
     if status_code and 400 <= status_code < 500:
         raise CategorisedError(
-            f"Checking coverage upload status failed (HTTP {status_code}): {_extract_message(body)}",
+            f"Checking coverage report processing status failed (HTTP {status_code}): {_extract_message(body)}",
             f"status_check_http_{status_code}",
         )
 
     emit_annotation(
         "warning",
-        f"Checking coverage upload status failed with HTTP status code '{status_code}'. Retrying until timeout.",
+        f"Checking coverage report processing status failed with HTTP status code '{status_code}'. Retrying until timeout.",
     )
     return False, None
 

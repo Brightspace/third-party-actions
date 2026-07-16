@@ -150,8 +150,8 @@ class UploadCoverageTests(unittest.TestCase):
                 r"Starting\ coverage\ upload\.\."
                 r".*Coverage\ report\ uploaded\ successfully\."
                 r".*Waiting\ for\ processing\ to\ finish"
-                r".*Coverage\ upload\ processing\ status:\ pending\."
-                r".*Coverage\ upload\ processing\ status:\ succeeded\."
+                r".*Coverage\ report\ processing\ status:\ pending\."
+                r".*Coverage\ report\ processing\ status:\ succeeded\."
                 r".*Coverage\ report\ processing\ finished\ successfully\.",
                 re.DOTALL,
             ),
