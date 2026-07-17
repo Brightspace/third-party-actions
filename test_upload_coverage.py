@@ -450,37 +450,29 @@ class UploadCoverageTests(unittest.TestCase):
 
         self.assertIn("fail-on-error: false", output)
 
-    # --- emit_annotation docs link ---
+    # --- Only warnings and error annotations include the docs link ---
 
-    def test_emit_annotation_error_appends_docs_url(self):
-        stdout = io.StringIO()
-        with redirect_stdout(stdout):
-            upload_coverage.emit_annotation("error", "boom")
-        output = stdout.getvalue()
+    def test_successful_upload_omits_docs_url(self):
+        exit_code, output, _ = self.run_main()
 
-        self.assertTrue(
-            output.rstrip("\n").endswith(f"See {upload_coverage.DOCS_URL} for more information."),
-            msg=f"unexpected output: {output!r}",
-        )
-
-    def test_emit_annotation_warning_appends_docs_url(self):
-        stdout = io.StringIO()
-        with redirect_stdout(stdout):
-            upload_coverage.emit_annotation("warning", "heads up")
-        output = stdout.getvalue()
-
-        self.assertTrue(
-            output.rstrip("\n").endswith(f"See {upload_coverage.DOCS_URL} for more information."),
-            msg=f"unexpected output: {output!r}",
-        )
-
-    def test_emit_annotation_notice_omits_docs_url(self):
-        stdout = io.StringIO()
-        with redirect_stdout(stdout):
-            upload_coverage.emit_annotation("notice", "fyi")
-        output = stdout.getvalue()
-
+        self.assertEqual(0, exit_code)
         self.assertNotIn(upload_coverage.DOCS_URL, output)
+    
+    def test_errors_responses_includes_docs_url(self):
+        opener = mock.Mock(side_effect=URLError("dns failure"))
+
+        exit_code, output, _ = self.run_main(opener=opener)
+
+        self.assertIn(upload_coverage.DOCS_URL, output)
+
+    def test_warning_annotation_includes_docs_url(self):
+        env = dict(self.base_env, WAIT_FOR_PROCESSING_TIMEOUT="10")
+        opener = mock.Mock(return_value=FakeResponse(status=201, body=b'{"id":"abc"}'))
+        exit_code, output, _ = self.run_main(opener=opener, env=env)
+
+        warning_lines = [l for l in output.splitlines() if l.startswith("::warning::")]
+        self.assertTrue(warning_lines)
+        self.assertIn(upload_coverage.DOCS_URL, warning_lines[0])
 
     # --- Telemetry integration ---
 
