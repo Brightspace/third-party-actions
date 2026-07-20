@@ -36,7 +36,9 @@ class PostUploadCoverageTests(unittest.TestCase):
 
     def test_noop_when_status_already_sent(self):
         """Post step exits immediately if main step reported completion."""
-        with mock.patch.dict("os.environ", {**self.base_env, "_COVERAGE_TELEMETRY_STATUS_SENT": "true"}):
+        with mock.patch.dict(
+            "os.environ", {**self.base_env, "_COVERAGE_TELEMETRY_STATUS_SENT": "true"}
+        ):
             with mock.patch.object(status_report, "send_status_report") as send:
                 exit_code = post_upload_coverage.main()
 
@@ -64,7 +66,11 @@ class PostUploadCoverageTests(unittest.TestCase):
 
     def test_sends_aborted_from_starting_report_state(self):
         """If only starting_report was saved, send an aborted report."""
-        starting = {"status": "starting", "started_at": "2024-01-01T00:00:00+00:00", "runner_os": "Linux"}
+        starting = {
+            "status": "starting",
+            "started_at": "2024-01-01T00:00:00+00:00",
+            "runner_os": "Linux",
+        }
         env = {
             **self.base_env,
             "_COVERAGE_TELEMETRY_STATUS_SENT": "",

@@ -5,6 +5,7 @@ Runs after the main step (even on cancellation/failure) to ensure we
 always report a final status. If the main step already sent a completion
 report, this is a no-op.
 """
+
 import json
 import os
 import sys

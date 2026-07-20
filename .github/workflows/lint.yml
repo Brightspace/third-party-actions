@@ -1,4 +1,4 @@
-name: CI
+name: Lint
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   pull_request:
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -18,5 +18,8 @@ jobs:
 
       - name: Install dependencies
         run: uv sync --locked --group dev
-      - name: Run unit tests
-        run: uv run python -m unittest test_upload_coverage.py test_status_report.py test_post_upload_coverage.py -v
+      - name: Run ruff lint
+        run: uv run ruff check .
+
+      - name: Run ruff format check
+        run: uv run ruff format --check .
