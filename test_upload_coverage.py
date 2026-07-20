@@ -450,26 +450,29 @@ class UploadCoverageTests(unittest.TestCase):
 
         self.assertIn("fail-on-error: false", output)
 
+    # --- Only warnings and error annotations include the docs link ---
 
-    def test_error_response_strips_documentation_url(self):
-        """Only the message field is shown, not the full JSON with documentation_url.
+    def test_successful_upload_omits_docs_url(self):
+        exit_code, output, _ = self.run_main()
 
-        TODO(GA): When docs are published at docs.github.com/rest/code-quality/code-coverage,
-        include the documentation_url in the output and update this test accordingly.
-        """
-        body = json.dumps({
-            "message": "Code quality is not enabled for this repository.",
-            "documentation_url": "https://docs.github.com/rest/code-quality/code-coverage",
-            "status": "403",
-        })
-        opener = mock.Mock(return_value=FakeResponse(status=403, body=body.encode()))
+        self.assertEqual(0, exit_code)
+        self.assertNotIn(upload_coverage.DOCS_URL, output)
+    
+    def test_errors_responses_includes_docs_url(self):
+        opener = mock.Mock(side_effect=URLError("dns failure"))
 
         exit_code, output, _ = self.run_main(opener=opener)
 
-        self.assertEqual(1, exit_code)
-        self.assertIn("Code quality is not enabled", output)
-        self.assertNotIn("documentation_url", output)
-        self.assertNotIn("docs.github.com", output)
+        self.assertIn(upload_coverage.DOCS_URL, output)
+
+    def test_warning_annotation_includes_docs_url(self):
+        env = dict(self.base_env, WAIT_FOR_PROCESSING_TIMEOUT="10")
+        opener = mock.Mock(return_value=FakeResponse(status=201, body=b'{"id":"abc"}'))
+        exit_code, output, _ = self.run_main(opener=opener, env=env)
+
+        warning_lines = [l for l in output.splitlines() if l.startswith("::warning::")]
+        self.assertTrue(warning_lines)
+        self.assertIn(upload_coverage.DOCS_URL, warning_lines[0])
 
     # --- Telemetry integration ---
 
