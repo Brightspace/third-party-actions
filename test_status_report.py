@@ -94,10 +94,12 @@ class BuildStartingReportTests(unittest.TestCase):
 
 class BuildCompletedReportTests(unittest.TestCase):
     def setUp(self):
-        self.starting = status_report.build_starting_report(env={
-            "RUNNER_OS": "Linux",
-            "INPUT_LANGUAGE": "Go",
-        })
+        self.starting = status_report.build_starting_report(
+            env={
+                "RUNNER_OS": "Linux",
+                "INPUT_LANGUAGE": "Go",
+            }
+        )
 
     def test_inherits_starting_fields(self):
         completed = status_report.build_completed_report(self.starting, status="success")
@@ -111,16 +113,20 @@ class BuildCompletedReportTests(unittest.TestCase):
 
     def test_includes_timing_and_size(self):
         completed = status_report.build_completed_report(
-            self.starting, status="success",
-            upload_duration_ms=1234, payload_size_bytes=5678,
+            self.starting,
+            status="success",
+            upload_duration_ms=1234,
+            payload_size_bytes=5678,
         )
         self.assertEqual(1234, completed["upload_duration_ms"])
         self.assertEqual(5678, completed["payload_size_bytes"])
 
     def test_includes_error_info(self):
         completed = status_report.build_completed_report(
-            self.starting, status="failure",
-            error_type="http_500", error_message="Internal Server Error",
+            self.starting,
+            status="failure",
+            error_type="http_500",
+            error_message="Internal Server Error",
         )
         self.assertEqual("http_500", completed["error_type"])
         self.assertEqual("Internal Server Error", completed["error_message"])
@@ -128,7 +134,9 @@ class BuildCompletedReportTests(unittest.TestCase):
     def test_truncates_long_error_message(self):
         long_msg = "x" * 2000
         completed = status_report.build_completed_report(
-            self.starting, status="failure", error_message=long_msg,
+            self.starting,
+            status="failure",
+            error_message=long_msg,
         )
         self.assertEqual(1000, len(completed["error_message"]))
 
@@ -144,8 +152,10 @@ class SendStatusReportTests(unittest.TestCase):
         report = {"status": "starting"}
 
         result = status_report.send_status_report(
-            report, repository="octo/repo",
-            api_url="https://api.github.com", token="tok123",
+            report,
+            repository="octo/repo",
+            api_url="https://api.github.com",
+            token="tok123",
             opener=opener,
         )
 
@@ -165,8 +175,11 @@ class SendStatusReportTests(unittest.TestCase):
         report = {"status": "success", "upload_duration_ms": 100}
 
         status_report.send_status_report(
-            report, repository="o/r", api_url="https://api.github.com",
-            token="t", opener=opener,
+            report,
+            repository="o/r",
+            api_url="https://api.github.com",
+            token="t",
+            opener=opener,
         )
 
         request = opener.call_args.args[0]
@@ -180,8 +193,11 @@ class SendStatusReportTests(unittest.TestCase):
 
         with redirect_stdout(stdout):
             result = status_report.send_status_report(
-                {"status": "starting"}, repository="o/r",
-                api_url="https://api.github.com", token="t", opener=opener,
+                {"status": "starting"},
+                repository="o/r",
+                api_url="https://api.github.com",
+                token="t",
+                opener=opener,
             )
 
         self.assertFalse(result)
@@ -193,8 +209,11 @@ class SendStatusReportTests(unittest.TestCase):
 
         with redirect_stdout(stdout):
             result = status_report.send_status_report(
-                {"status": "starting"}, repository="o/r",
-                api_url="https://api.github.com", token="t", opener=opener,
+                {"status": "starting"},
+                repository="o/r",
+                api_url="https://api.github.com",
+                token="t",
+                opener=opener,
             )
 
         self.assertFalse(result)
@@ -205,8 +224,11 @@ class SendStatusReportTests(unittest.TestCase):
 
         with redirect_stdout(stdout):
             result = status_report.send_status_report(
-                {"status": "starting"}, repository="o/r",
-                api_url="https://api.github.com", token="t", opener=opener,
+                {"status": "starting"},
+                repository="o/r",
+                api_url="https://api.github.com",
+                token="t",
+                opener=opener,
             )
 
         self.assertFalse(result)
@@ -217,8 +239,11 @@ class SendStatusReportTests(unittest.TestCase):
         opener = mock.Mock(return_value=FakeResponse())
 
         status_report.send_status_report(
-            {"status": "starting"}, repository="o/r",
-            api_url="https://api.github.com", token="t", opener=opener,
+            {"status": "starting"},
+            repository="o/r",
+            api_url="https://api.github.com",
+            token="t",
+            opener=opener,
         )
 
         _, kwargs = opener.call_args

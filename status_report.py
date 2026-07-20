@@ -6,13 +6,13 @@ errors, and performance. All public functions are safe to call in any
 context — they swallow exceptions and log warnings so telemetry never
 causes the action to fail.
 """
+
 import json
 import os
 import urllib.error
 import urllib.request
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
-
+from typing import Any, Optional
 
 STATUS_ENDPOINT = "/repos/{repository}/code-coverage/action/status"
 STATUS_TIMEOUT_SECONDS = 30
@@ -35,9 +35,9 @@ def _emit_warning(message: str) -> None:
     print(f"::warning::{message}")
 
 
-def _gather_runner_info(env: Dict[str, str]) -> Dict[str, Any]:
+def _gather_runner_info(env: dict[str, str]) -> dict[str, Any]:
     """Collect runner environment details."""
-    info: Dict[str, Any] = {}
+    info: dict[str, Any] = {}
     for key, field in [
         ("RUNNER_OS", "runner_os"),
         ("RUNNER_ARCH", "runner_arch"),
@@ -49,9 +49,9 @@ def _gather_runner_info(env: Dict[str, str]) -> Dict[str, Any]:
     return info
 
 
-def _gather_workflow_context(env: Dict[str, str]) -> Dict[str, Any]:
+def _gather_workflow_context(env: dict[str, str]) -> dict[str, Any]:
     """Collect workflow/job context."""
-    ctx: Dict[str, Any] = {}
+    ctx: dict[str, Any] = {}
     for key, field in [
         ("GITHUB_WORKFLOW", "workflow_name"),
         ("GITHUB_JOB", "job_name"),
@@ -61,7 +61,9 @@ def _gather_workflow_context(env: Dict[str, str]) -> Dict[str, Any]:
     ]:
         value = env.get(key)
         if value:
-            ctx[field] = _safe_int(value) if field in ("workflow_run_id", "workflow_run_attempt") else value
+            ctx[field] = (
+                _safe_int(value) if field in ("workflow_run_id", "workflow_run_attempt") else value
+            )
 
     # job_run_uuid: unique identifier for this job run
     job_run_uuid = env.get("JOB_RUN_UUID", "")
@@ -71,9 +73,9 @@ def _gather_workflow_context(env: Dict[str, str]) -> Dict[str, Any]:
     return ctx
 
 
-def _gather_action_metadata(env: Dict[str, str]) -> Dict[str, Any]:
+def _gather_action_metadata(env: dict[str, str]) -> dict[str, Any]:
     """Collect action identity metadata."""
-    meta: Dict[str, Any] = {
+    meta: dict[str, Any] = {
         "action_name": "upload-code-coverage",
         "action_version": env.get("ACTION_VERSION", "unknown"),
     }
@@ -84,7 +86,7 @@ def _gather_action_metadata(env: Dict[str, str]) -> Dict[str, Any]:
     return meta
 
 
-def build_starting_report(env: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
+def build_starting_report(env: Optional[dict[str, str]] = None) -> dict[str, Any]:
     """Build the initial "starting" status report.
 
     This captures input parameters, runner info, and workflow context
@@ -92,7 +94,7 @@ def build_starting_report(env: Optional[Dict[str, str]] = None) -> Dict[str, Any
     """
     e = dict(os.environ if env is None else env)
 
-    report: Dict[str, Any] = {
+    report: dict[str, Any] = {
         "status": "starting",
         "started_at": _now_iso(),
     }
@@ -117,14 +119,14 @@ def build_starting_report(env: Optional[Dict[str, str]] = None) -> Dict[str, Any
 
 
 def build_completed_report(
-    starting_report: Dict[str, Any],
+    starting_report: dict[str, Any],
     *,
     status: str,
     upload_duration_ms: Optional[int] = None,
     payload_size_bytes: Optional[int] = None,
     error_type: Optional[str] = None,
     error_message: Optional[str] = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Build the completion status report from a starting report.
 
     Copies fields from the starting report and adds completion-specific
@@ -147,7 +149,7 @@ def build_completed_report(
 
 
 def send_status_report(
-    report: Dict[str, Any],
+    report: dict[str, Any],
     *,
     repository: str,
     api_url: str,
