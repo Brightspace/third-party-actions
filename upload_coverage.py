@@ -74,7 +74,11 @@ def _extract_message(body: str) -> str:
 
 def parse_response(body: str) -> str:
     """Parse the coverage report ID from a successful upload response."""
-    coverage_report_id = _load_json_object(body).get("id")
+    return _parse_coverage_report_id(_load_json_object(body))
+
+
+def _parse_coverage_report_id(data: dict) -> str:
+    coverage_report_id = data.get("id")
     if not coverage_report_id:
         error_message = "Coverage upload succeeded but the response did not include an upload id"
         raise CategorisedError(error_message, "missing_upload_id")
@@ -309,16 +313,18 @@ def handle_response(status: int, body: str) -> Optional[str]:
     if status == 0:
         raise CategorisedError("could not reach the API", "network_error")
     elif 200 <= status < 300:
-        coverage_report_id = _load_json_object(body).get("id")
+        data = _load_json_object(body)
+        coverage_report_id = data.get("id")
         if status == 200 and not coverage_report_id:
-            message = _extract_message(body).strip()
+            raw_message = data.get("message")
+            message = raw_message if isinstance(raw_message, str) else ""
             warning = "Skipped coverage processing"
             if message:
                 warning = f"{warning}: {message}"
             emit_annotation("warning", warning)
             return None
 
-        coverage_report_id = parse_response(body)
+        coverage_report_id = _parse_coverage_report_id(data)
         print("Coverage report uploaded successfully.")
         return coverage_report_id
     elif status == 403 and "not authorized" in body.lower():
