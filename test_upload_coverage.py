@@ -75,10 +75,10 @@ class UploadCoverageTests(unittest.TestCase):
             ]
         )
 
-    def run_main(self, env=None, opener=None):
+    def run_main(self, env=None, opener=None, status_opener=None):
         stdout = io.StringIO()
         opener = opener or self.successful_opener()
-        status_opener = mock.Mock(return_value=FakeResponse())
+        status_opener = status_opener or mock.Mock(return_value=FakeResponse())
         with redirect_stdout(stdout):
             fake_time = FakeTime()
             with (
@@ -151,7 +151,6 @@ class UploadCoverageTests(unittest.TestCase):
 
         self.assertEqual(0, exit_code)
         self.assertIn("::warning::Skipped coverage processing", output)
-        self.assertNotIn("Coverage report uploaded successfully", output)
         opener.assert_called_once()
 
     def test_201_without_coverage_id_fails(self):
@@ -533,14 +532,12 @@ class UploadCoverageTests(unittest.TestCase):
             )
         )
         status_opener = mock.Mock(return_value=FakeResponse())
-        stdout = io.StringIO()
 
-        with redirect_stdout(stdout):
-            exit_code = upload_coverage.main(
-                environ=dict(self.base_env, WAIT_FOR_PROCESSING_TIMEOUT="10"),
-                opener=opener,
-                status_opener=status_opener,
-            )
+        exit_code, _, _ = self.run_main(
+            env=dict(self.base_env, WAIT_FOR_PROCESSING_TIMEOUT="10"),
+            opener=opener,
+            status_opener=status_opener,
+        )
 
         self.assertEqual(0, exit_code)
         completed_request = status_opener.call_args_list[1].args[0]

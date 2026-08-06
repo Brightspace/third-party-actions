@@ -72,11 +72,6 @@ def _extract_message(body: str) -> str:
     return body
 
 
-def parse_response(body: str) -> str:
-    """Parse the coverage report ID from a successful upload response."""
-    return _parse_coverage_report_id(_load_json_object(body))
-
-
 def _parse_coverage_report_id(data: dict) -> str:
     coverage_report_id = data.get("id")
     if not coverage_report_id:
