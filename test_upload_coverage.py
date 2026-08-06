@@ -75,10 +75,10 @@ class UploadCoverageTests(unittest.TestCase):
             ]
         )
 
-    def run_main(self, env=None, opener=None):
+    def run_main(self, env=None, opener=None, status_opener=None):
         stdout = io.StringIO()
         opener = opener or self.successful_opener()
-        status_opener = mock.Mock(return_value=FakeResponse())
+        status_opener = status_opener or mock.Mock(return_value=FakeResponse())
         with redirect_stdout(stdout):
             fake_time = FakeTime()
             with (
@@ -127,14 +127,39 @@ class UploadCoverageTests(unittest.TestCase):
 
     # --- Waiting for processing ---
 
-    def test_200_with_waiting_without_coverage_id_fails(self):
+    def test_200_without_coverage_id_skips_processing(self):
         env = dict(self.base_env, WAIT_FOR_PROCESSING_TIMEOUT="10")
-        opener = mock.Mock(return_value=FakeResponse(status=200, body=b"{}"))
+        opener = mock.Mock(
+            return_value=FakeResponse(
+                status=200,
+                body=b'{"message":"commit is not the latest commit on the branch"}',
+            )
+        )
 
         exit_code, output, _ = self.run_main(opener=opener, env=env)
 
-        self.assertIn("response did not include an upload id", output)
+        self.assertEqual(0, exit_code)
+        self.assertIn("::warning::Skipped coverage processing", output)
+        self.assertIn("commit is not the latest commit on the branch", output)
+        self.assertNotIn("Waiting for processing to finish", output)
+        opener.assert_called_once()
+
+    def test_200_without_coverage_id_warns_when_waiting_is_disabled(self):
+        opener = mock.Mock(return_value=FakeResponse(status=200, body=b"{}"))
+
+        exit_code, output, _ = self.run_main(opener=opener)
+
+        self.assertEqual(0, exit_code)
+        self.assertIn("::warning::Skipped coverage processing", output)
+        opener.assert_called_once()
+
+    def test_201_without_coverage_id_fails(self):
+        opener = mock.Mock(return_value=FakeResponse(status=201, body=b"{}"))
+
+        exit_code, output, _ = self.run_main(opener=opener)
+
         self.assertEqual(1, exit_code)
+        self.assertIn("response did not include an upload id", output)
 
     def test_waits_for_processing_after_successful_upload(self):
         env = dict(self.base_env, WAIT_FOR_PROCESSING_TIMEOUT="10")
@@ -498,6 +523,27 @@ class UploadCoverageTests(unittest.TestCase):
         self.assertIn("completed_at", completed_body)
         self.assertIn("upload_duration_ms", completed_body)
         self.assertIn("payload_size_bytes", completed_body)
+
+    def test_telemetry_reports_skipped_processing_as_success(self):
+        opener = mock.Mock(
+            return_value=FakeResponse(
+                status=200,
+                body=b'{"message":"commit is not the latest commit on the branch"}',
+            )
+        )
+        status_opener = mock.Mock(return_value=FakeResponse())
+
+        exit_code, _, _ = self.run_main(
+            env=dict(self.base_env, WAIT_FOR_PROCESSING_TIMEOUT="10"),
+            opener=opener,
+            status_opener=status_opener,
+        )
+
+        self.assertEqual(0, exit_code)
+        completed_request = status_opener.call_args_list[1].args[0]
+        completed_body = json.loads(completed_request.data)
+        self.assertEqual("success", completed_body["status"])
+        self.assertNotIn("error_type", completed_body)
 
     def test_telemetry_sends_failure_report_on_upload_error(self):
         opener = mock.Mock(return_value=FakeResponse(status=500, body=b'{"message":"boom"}'))

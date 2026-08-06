@@ -72,9 +72,8 @@ def _extract_message(body: str) -> str:
     return body
 
 
-def parse_response(body: str) -> str:
-    """Parse the coverage report ID from a successful upload response."""
-    coverage_report_id = _load_json_object(body).get("id")
+def _parse_coverage_report_id(data: dict) -> str:
+    coverage_report_id = data.get("id")
     if not coverage_report_id:
         error_message = "Coverage upload succeeded but the response did not include an upload id"
         raise CategorisedError(error_message, "missing_upload_id")
@@ -300,15 +299,29 @@ def wait_for_processing(
         print("::endgroup::")
 
 
-def handle_response(status: int, body: str) -> None:
+def handle_response(status: int, body: str) -> Optional[str]:
     """Process the upload response.
 
-    Prints a success message for 2XX responses, and raises CategorisedError for failures.
+    Returns the upload ID, or None when the API intentionally skips processing.
+    Raises CategorisedError for failures and malformed upload responses.
     """
     if status == 0:
         raise CategorisedError("could not reach the API", "network_error")
     elif 200 <= status < 300:
+        data = _load_json_object(body)
+        coverage_report_id = data.get("id")
+        if status == 200 and not coverage_report_id:
+            raw_message = data.get("message")
+            message = raw_message if isinstance(raw_message, str) else ""
+            warning = "Skipped coverage processing"
+            if message:
+                warning = f"{warning}: {message}"
+            emit_annotation("warning", warning)
+            return None
+
+        coverage_report_id = _parse_coverage_report_id(data)
         print("Coverage report uploaded successfully.")
+        return coverage_report_id
     elif status == 403 and "not authorized" in body.lower():
         raise CategorisedError(PERMISSIONS_ERROR.format(status=status), "permissions_error")
     else:
@@ -429,7 +442,7 @@ def main(
 
     upload_duration_ms = int((time.monotonic() - upload_start) * 1000)
     try:
-        handle_response(http_status, body)
+        coverage_id = handle_response(http_status, body)
     except CategorisedError as error:
         emit_annotation("error", f"Coverage upload failed: {error}. {FAIL_ON_ERROR_HINT}")
         telemetry_status = "user-error" if 400 <= http_status < 500 else "failure"
@@ -445,9 +458,8 @@ def main(
         )
         return 1 if fail_on_error else 0
 
-    if wait_for_processing_timeout > 0:
+    if coverage_id is not None and wait_for_processing_timeout > 0:
         try:
-            coverage_id = parse_response(body)
             error_msg = wait_for_processing(
                 coverage_report_id=coverage_id,
                 timeout_seconds=wait_for_processing_timeout,
